@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>979</width>
+    <height>640</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>FreeGM</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="applications-development">
+    <normaloff>.</normaloff>.</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QWidget {
+background-color: rgb(190, 190, 190);
+color: rgb(0, 0, 0);
+border-top-color: white;
+border-right-color: white;
+border-bottom-color: gray;
+border-left-color: gray;
+alternate-background-color: rgb(255, 255, 255);
+font-size:14px;
+}
+QMdiSubWindow {
+border: 3px solid;
+border-top-color: white;
+border-right-color: white;
+border-bottom-color: #666666;
+border-left-color: #666666;
+background-color: white;
+border-radius: 0px;
+}
+QLineEdit, QTreeWidget, QSpinBox {
+background-color: rgba(255,255,255,.5);
+border: 2px solid;
+border-top-color: gray;
+border-right-color: gray;
+border-bottom-color: white;
+border-left-color: white;
+}
+QPushButton, QComboBox, QScrollBar {
+border: 2px solid;
+border-top-color: white;
+border-right-color: white;
+border-bottom-color: gray;
+border-left-color: gray;
+}
+QPushButton:pressed, QComboBox:pressed {
+border: 2px solid;
+border-top-color: gray;
+border-right-color: gray;
+border-bottom-color: white;
+border-left-color: white;
+background-color: rgba(0,0,0,.10);
+padding-left:-2px;
+padding-top:2px;
+}
+QPushButton:disabled {
+background-color:gray;
+border: 2px solid black
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <widget class="QMdiArea" name="mdiDesktop">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>2048</width>
+        <height>2048</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="background">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>127</red>
+         <green>127</green>
+         <blue>127</blue>
+        </color>
+       </brush>
+      </property>
+      <property name="viewMode">
+       <enum>QMdiArea::SubWindowView</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QDockWidget" name="dckResources">
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Resource tree</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_6">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QTreeWidget" name="trwResources">
+       <column>
+        <property name="text">
+         <string>Project</string>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>Sprites</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/icons/sprite</normalon>
+         </iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Objects</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/icons/object</normalon>
+         </iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Rooms</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/icons/room</normalon>
+         </iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Constants</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/icons/constan</normalon>
+         </iconset>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dckToolbox">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>979</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string notr="true">Tools</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_9">
+    <widget class="QPushButton" name="btnNew">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>New project</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/document_new</normaloff>:/icons/document_new</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnLoad">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Load project</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/document_open</normaloff>:/icons/document_open</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnSave">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Save project</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/document_save</normaloff>:/icons/document_save</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="Line" name="line">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>0</y>
+       <width>3</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bntClean">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Clean</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/run</normaloff>:/icons/run</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="Line" name="line_2">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>0</y>
+       <width>3</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAddSprite">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Add new sprite</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/sprite</normaloff>:/icons/sprite</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAddObject">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Add new object</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/object</normaloff>:/icons/object</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAddRoom">
+     <property name="geometry">
+      <rect>
+       <x>520</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Add new room</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/room</normaloff>:/icons/room</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bntRun_2">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>0</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Compile &amp; run</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/run</normaloff>:/icons/run</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>10</y>
+       <width>121</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Compilaion target</string>
+     </property>
+     <property name="text">
+      <string notr="true">all</string>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>&lt;target&gt;</string>
+     </property>
+     <property name="clearButtonEnabled">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>979</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuPanels">
+    <property name="title">
+     <string>Panels</string>
+    </property>
+    <addaction name="actionResources"/>
+   </widget>
+   <widget class="QMenu" name="menuDebug_2">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuResource">
+    <property name="title">
+     <string>Resource</string>
+    </property>
+    <addaction name="actionEdit"/>
+    <addaction name="actionDelete"/>
+    <addaction name="actionDelete_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_new"/>
+   </widget>
+   <addaction name="menuDebug"/>
+   <addaction name="menuResource"/>
+   <addaction name="menuPanels"/>
+   <addaction name="menuDebug_2"/>
+  </widget>
+  <action name="actionResources">
+   <property name="text">
+    <string>Resource tree</string>
+   </property>
+  </action>
+  <action name="actionCreate_new">
+   <property name="text">
+    <string>Create new</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>Duplicate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="actionDelete_2">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Del</string>
+   </property>
+  </action>
+  <action name="actionEdit">
+   <property name="text">
+    <string>Edit</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Enter</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
