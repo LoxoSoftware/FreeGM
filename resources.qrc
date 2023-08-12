@@ -5,7 +5,7 @@
         <file alias="object">ico/object.png</file>
         <file alias="run">ico/run.png</file>
         <file alias="ok">ico/ok.png</file>
-        <file alias="constan">ico/constant.png</file>
+        <file alias="constant">ico/constant.png</file>
         <file alias="document_new">ico/document_new.png</file>
         <file alias="document_open">ico/document_open.png</file>
         <file alias="document_save">ico/document_save.png</file>
