@@ -88,6 +88,7 @@ GMResource* treeitem(QTreeWidgetItem* item)
     return resource_find(item->text(0));
 }
 
+/*
 QWidget* window_open(int wintype, QMdiArea* mdidesktop, QObject* resptr = nullptr) //Reference by int
 {
     QWidget* newwindow;
@@ -106,7 +107,7 @@ QWidget* window_open(int wintype, QMdiArea* mdidesktop, QObject* resptr = nullpt
     newwindow->show();
 
     return newwindow;
-}
+}*/
 
 QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by item
 {
@@ -115,7 +116,7 @@ QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by
     if (item->parent() == folder_sprites)
         widget = new SpriteEditor((GMSprite*)treeitem(item)); else
     if (item->parent() == folder_objects)
-        widget = new ObjectEditor(); else
+        widget = new ObjectEditor((GMObject*)treeitem(item), folder_sprites); else
     if (item->parent() == folder_rooms)
         widget = new RoomEditor(); else
     if (item->parent() == folder_constants)

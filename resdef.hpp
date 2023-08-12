@@ -16,8 +16,17 @@ public:
     {
         tree_item->setText(0, name);
     }
+    int getFolderIndex()
+    {
+        return folder_index;
+    }
+    QTreeWidgetItem* getFolder()
+    {
+        return tree_item->parent();
+    }
 protected:
     QTreeWidgetItem* tree_item;
+    int folder_index;
 };
 
 class GMSprite : public GMResource
@@ -35,6 +44,7 @@ public:
         }
         name= tree_item->text(0);
         this->tree_item= tree_item;
+        folder_index= tree_item->parent()->indexOfChild(tree_item);
 
         image_url= ":/icons/sprite";
         animated= true;
@@ -45,12 +55,13 @@ public:
 class GMObject : public GMResource
 {
 public:
-    GMSprite* image;
+    GMSprite* image= nullptr;
     bool visible;
     GMObject(QTreeWidgetItem* tree_item)
     {
         name= tree_item->text(0);
         this->tree_item= tree_item;
+        folder_index= tree_item->parent()->indexOfChild(tree_item);
     }
 };
 
@@ -64,6 +75,7 @@ public:
     {
         name= tree_item->text(0);
         this->tree_item= tree_item;
+        folder_index= tree_item->parent()->indexOfChild(tree_item);
     }
 };
 
@@ -75,5 +87,6 @@ public:
     {
         name= tree_item->text(0);
         this->tree_item= tree_item;
+        folder_index= tree_item->parent()->indexOfChild(tree_item);
     }
 };
