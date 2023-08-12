@@ -32,7 +32,7 @@
       <x>10</x>
       <y>10</y>
       <width>181</width>
-      <height>431</height>
+      <height>451</height>
      </rect>
     </property>
     <property name="title">
@@ -51,7 +51,7 @@
       <string>Name</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit">
+    <widget class="QLineEdit" name="txtObjName">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -61,24 +61,11 @@
       </rect>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>210</y>
-       <width>100</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Visible</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="btnOk">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>379</y>
+       <y>400</y>
        <width>141</width>
        <height>41</height>
       </rect>
@@ -104,7 +91,7 @@
       <string>Sprite</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="cmbSpriteSel">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -114,17 +101,122 @@
       </rect>
      </property>
     </widget>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>200</y>
+       <width>160</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="chkVisible">
+        <property name="text">
+         <string>Visible</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>27</height>
-    </rect>
-   </property>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>10</y>
+      <width>191</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Events</string>
+    </property>
+    <widget class="QListWidget" name="lstEvents">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>31</y>
+       <width>171</width>
+       <height>361</height>
+      </rect>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="itemAlignment">
+      <set>Qt::AlignLeading</set>
+     </property>
+     <item>
+      <property name="text">
+       <string>test</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/icons/constant</normaloff>:/icons/constant</iconset>
+      </property>
+     </item>
+    </widget>
+    <widget class="QPushButton" name="btnAddEvent">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>400</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add custom trigger</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>10</y>
+      <width>391</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Code</string>
+    </property>
+    <widget class="QTextEdit" name="txtCode">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>371</width>
+       <height>361</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Write C++ code here</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnExternalCode">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>400</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>External editor...</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <resources>
