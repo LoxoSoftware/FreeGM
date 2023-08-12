@@ -23,16 +23,16 @@ public:
     explicit SpriteEditor(GMSprite* sprite, QWidget *parent = nullptr);
     ~SpriteEditor();
 
-public slots:
-    //void on_loadResource(GMSprite* spr);
-
 private slots:
+    void on_spbFrames_valueChanged(int arg1);
     void on_btnLoadSprite_clicked();
     void on_btnOk_clicked();
 
 private:
     Ui::SpriteEditor *ui;
     GMSprite* sprite;
+    QString temp_filename= ":/icons/sprite.png";
+    QIcon temp_icon;
 };
 
 #endif // SPRITEEDITOR_H

@@ -30,27 +30,38 @@ extern QTreeWidgetItem* folder_constants;
 //class GMRoom;
 //class GMConstant;
 
-QList<GMResource> resources= QList<GMResource>();
-QTreeWidget* restree;
+QList<GMResource*> resources= QList<GMResource*>();
 
 #include "spriteeditor.h"
 #include "roomeditor.h"
 #include "objecteditor.h"
 #include "constanteditor.h"
 
-int resources_loadtree()
-{
-    return 0;
-}
-
 QTreeWidgetItem* resources_newitem(QString default_name, QTreeWidgetItem* folder, QTreeWidget* tree)
 {
+    QString newname = default_name+QString::number(folder->childCount());
     QTreeWidgetItem* newitem = new QTreeWidgetItem();
-    newitem->setText(0, default_name+QString::number(folder->childCount()));
+
+    //Create an entry in the resource tree
+    newitem->setText(0, newname);
     folder->addChild(newitem);
-    tree->expandItem(folder);
+
+    //Create an object based on that entry
+    GMResource* newres= nullptr;
+    if (folder == folder_sprites)
+        newres = new GMSprite(newitem); else
+    if (folder == folder_objects)
+        newres = new GMObject(newitem); else
+    if (folder == folder_rooms)
+        newres = new GMRoom(newitem); else
+    if (folder == folder_constants)
+        newres = new GMConstant(newitem); else
+    return nullptr;
+    resources += newres;
+
     //QTreeWidgetItem* folder = ui->trwResources->findItems(QString::fromStdString("Rooms"),Qt::MatchFlags())[0];
-    restree = tree;
+
+    tree->expandItem(folder);
 
     return newitem;
 }
@@ -59,8 +70,8 @@ GMResource* resource_find(QString name)
 {
     for (int i=0; i<resources.count(); i++)
     {
-        if (resources[i].name == name)
-            return &resources[i];
+        if (resources[i]->name == name)
+            return resources[i];
     }
 
     return nullptr;
@@ -73,6 +84,7 @@ GMResource* treeitem(QTreeWidgetItem* item)
         if ((QTreeWidgetItem*)tree->children()[i] == item)
             return &resources[i];
     }*/
+    std::cout << "Found resource: " << item->text(0).toStdString() << std::endl;
     return resource_find(item->text(0));
 }
 

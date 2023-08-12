@@ -170,6 +170,22 @@
      </property>
     </widget>
    </widget>
+   <widget class="QScrollBar" name="scrFrameSel">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>80</y>
+      <width>16</width>
+      <height>160</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Frame preview selection</string>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources>

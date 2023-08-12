@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent)
     //restree->setModel(tree_model);
     //restree->model()->;
     //ui->trwResources= restree;
-    resources_loadtree();
 
     folder_sprites = ui->trwResources->topLevelItem(FOLDER_SPRITES);
     folder_objects = ui->trwResources->topLevelItem(FOLDER_OBJECTS);
@@ -47,6 +46,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_btnAddSprite_released()
 {
     QTreeWidgetItem* newitem = resources_newitem("sprite",folder_sprites,ui->trwResources);
+    if (!newitem) return;
     window_open(newitem, ui->mdiDesktop);
 }
 
