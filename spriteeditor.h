@@ -31,7 +31,7 @@ private slots:
 private:
     Ui::SpriteEditor *ui;
     GMSprite* sprite;
-    QString temp_filename= ":/icons/sprite.png";
+    QImage temp_image;
     QIcon temp_icon;
 };
 

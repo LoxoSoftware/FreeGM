@@ -25,8 +25,8 @@ SpriteEditor::SpriteEditor(GMSprite* sprite, QWidget *parent) :
 
     //Loading data from sprite
     ui->txtSprName->setText(this->sprite->name);
-    temp_filename= sprite->image_url;
-    temp_icon.addFile(temp_filename);
+    temp_image= this->sprite->image;
+    temp_icon= this->sprite->icon;
     ui->btnLoadSprite->setIcon(temp_icon);
     ui->spbFrames->setValue(this->sprite->frames);
     ui->chkAnimate->setChecked(this->sprite->animated);
@@ -43,7 +43,8 @@ void SpriteEditor::on_btnOk_clicked()
 {
     //Save settings
     sprite->name= ui->txtSprName->text();
-    sprite->image_url= temp_filename;
+    sprite->icon= temp_icon;
+    sprite->image= temp_image;
     sprite->animated= ui->chkAnimate->isChecked();
     sprite->frames= ui->spbFrames->value();
     sprite->update();
@@ -62,10 +63,11 @@ void SpriteEditor::on_btnLoadSprite_clicked()
     fd->setStyleSheet("QPushButton { padding: 8px; padding-left: 20px; padding-right: 20px; }");
     //fd->show();
     fd->setOption(QFileDialog::DontUseNativeDialog, true);
-    temp_filename = fd->getOpenFileName(this, "Load a sprite",
-                                           QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
+    QString temp_filename = fd->getOpenFileName(this, "Load a sprite",
+                                           ".",
                                            "*.png");
     temp_icon.addFile(temp_filename);
+    temp_image.load(temp_filename);
     ui->btnLoadSprite->setIcon(temp_icon);
 }
 

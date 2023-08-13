@@ -15,6 +15,7 @@ public:
     void update()
     {
         tree_item->setText(0, name);
+        tree_item->treeWidget()->setCurrentItem(tree_item);
     }
     int getFolderIndex()
     {
@@ -24,6 +25,10 @@ public:
     {
         return tree_item->parent();
     }
+    QTreeWidgetItem* getTreeItem()
+    {
+        return tree_item;
+    }
 protected:
     QTreeWidgetItem* tree_item;
     int folder_index;
@@ -32,7 +37,9 @@ protected:
 class GMSprite : public GMResource
 {
 public:
-    QString image_url;
+    //QString image_url;
+    QIcon icon;
+    QImage image;
     bool animated;
     int frames;
     GMSprite(QTreeWidgetItem* tree_item)
@@ -46,7 +53,9 @@ public:
         this->tree_item= tree_item;
         folder_index= tree_item->parent()->indexOfChild(tree_item);
 
-        image_url= ":/icons/sprite";
+        //image_url= ":/icons/sprite";
+        icon= QIcon(":/icons/sprite");
+        image= QImage(":/icons/sprite");
         animated= true;
         frames= 1;
     }
