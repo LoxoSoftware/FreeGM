@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
         constanteditor.h constanteditor.cpp constanteditor.ui
         objecteditor.h objecteditor.cpp objecteditor.ui
         roomeditor.h roomeditor.cpp roomeditor.ui
+        eventpicker.h eventpicker.cpp eventpicker.ui
         resources.qrc
 )
 
