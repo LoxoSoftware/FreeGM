@@ -66,12 +66,14 @@ border-right-color: gray;
 border-bottom-color: white;
 border-left-color: white;
 }
-QPushButton, QComboBox, QScrollBar {
+QPushButton, QComboBox, /*QScrollBar::handle,*/
+QHeaderView::section {
 border: 2px solid;
 border-top-color: white;
 border-right-color: white;
 border-bottom-color: gray;
 border-left-color: gray;
+background-color: rgb(181,181,181);
 }
 QPushButton:pressed, QComboBox:pressed {
 border: 2px solid;
@@ -86,6 +88,16 @@ padding-top:2px;
 QPushButton:disabled {
 background-color: gray;
 border: 1px solid rgb(63,63,63);
+}
+QTextEdit:disabled {
+background-color: rgb(181,181,181);
+border: 1px solid black;
+}
+QTreeWidget::item:hover, QListWidget::item:hover {
+background-color: rgb(181,181,181);
+}
+QTreeWidget::item:selected, QListWidget::item:selected {
+background-color: rgb(0,0,127);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -137,9 +149,22 @@ border: 1px solid rgb(63,63,63);
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QTreeWidget" name="trwResources">
+       <property name="indentation">
+        <number>20</number>
+       </property>
+       <property name="rootIsDecorated">
+        <bool>false</bool>
+       </property>
        <column>
         <property name="text">
          <string>Project</string>
+        </property>
+        <property name="background">
+         <color alpha="0">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
         </property>
        </column>
        <item>
@@ -178,7 +203,7 @@ border: 1px solid rgb(63,63,63);
         </property>
         <property name="icon">
          <iconset>
-          <normalon>:/icons/constan</normalon>
+          <normalon>:/icons/constant</normalon>
          </iconset>
         </property>
        </item>
