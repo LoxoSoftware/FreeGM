@@ -9,5 +9,7 @@
         <file alias="document_new">ico/document_new.png</file>
         <file alias="document_open">ico/document_open.png</file>
         <file alias="document_save">ico/document_save.png</file>
+        <file alias="cancel">ico/cancel.png</file>
+        <file alias="question">ico/question.png</file>
     </qresource>
 </RCC>
