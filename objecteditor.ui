@@ -154,15 +154,6 @@
      <property name="itemAlignment">
       <set>Qt::AlignLeading</set>
      </property>
-     <item>
-      <property name="text">
-       <string>test</string>
-      </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/constant</normaloff>:/icons/constant</iconset>
-      </property>
-     </item>
     </widget>
     <widget class="QPushButton" name="btnAddEvent">
      <property name="geometry">
@@ -174,7 +165,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Add custom trigger</string>
+      <string>Add trigger</string>
      </property>
     </widget>
    </widget>
@@ -198,6 +189,12 @@
        <width>371</width>
        <height>361</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>11</pointsize>
+      </font>
      </property>
      <property name="placeholderText">
       <string>Write C++ code here</string>

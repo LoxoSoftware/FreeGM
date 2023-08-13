@@ -7,6 +7,7 @@
 #include <QResource>
 #include <QColor>
 #include <QTreeWidgetItem>
+#include <QListWidgetItem>
 
 class GMResource
 {
@@ -66,6 +67,8 @@ class GMObject : public GMResource
 public:
     GMSprite* image= nullptr;
     bool visible;
+    QList<QListWidgetItem> events;
+    QList<QString> event_code;
     GMObject(QTreeWidgetItem* tree_item)
     {
         name= tree_item->text(0);

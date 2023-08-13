@@ -3,10 +3,13 @@
 
 #include <QMainWindow>
 #include <QTreeWidgetItem>
+#include <QListWidgetItem>
 
 #ifndef RESDEF_HPP
 #include "resdef.hpp"
 #endif
+
+extern QWidget* mainwindow;
 
 namespace Ui {
 class ObjectEditor;
@@ -21,15 +24,17 @@ public:
     ~ObjectEditor();
 
 private slots:
+    void on_txtCode_textChanged();
+    void on_lstEvents_itemClicked(QListWidgetItem *item);
+    void on_lstEvents_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void on_btnAddEvent_clicked();
-
-private slots:
     void on_btnOk_clicked();
 
 private:
     Ui::ObjectEditor *ui;
     GMObject* object;
-    QList<QString>* events= new QList<QString>;
+    QList<QListWidgetItem> events;
+    QList<QString> event_code;
     QTreeWidgetItem* sprite_folder;
 };
 
