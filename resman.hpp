@@ -31,6 +31,8 @@ extern QTreeWidgetItem* folder_constants;
 //class GMRoom;
 //class GMConstant;
 
+QWidget* mainwindow;
+
 QList<GMResource*> resources= QList<GMResource*>();
 
 #include "spriteeditor.h"
