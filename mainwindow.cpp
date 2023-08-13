@@ -5,6 +5,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include <QMessageBox>
+
 QTreeWidgetItem* folder_sprites;
 QTreeWidgetItem* folder_objects;
 QTreeWidgetItem* folder_rooms;
@@ -79,6 +81,12 @@ void MainWindow::on_trwResources_itemDoubleClicked(QTreeWidgetItem *item, int co
 
 void MainWindow::on_actionCreate_new_triggered()
 {
+    if (ui->trwResources->selectedItems().count() <= 0)
+    {
+        //No folder/item selected
+        QMessageBox::information(this, "Error creating a new item", "Please select a folder in the resource tree and try again.");
+        return;
+    }
     QTreeWidgetItem* item = ui->trwResources->selectedItems()[0];
 
     if (item == folder_sprites || item->parent() == folder_sprites)
