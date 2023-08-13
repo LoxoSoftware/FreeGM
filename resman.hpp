@@ -14,6 +14,7 @@
 #include "resdef.hpp"
 
 QString filename = "<new game>";
+bool newgame = true;
 
 #define FOLDER_SPRITES      0
 #define FOLDER_OBJECTS      1
@@ -133,6 +134,5 @@ QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by
     newwindow->show();
     //This allows the window to be closed
     QObject::connect(widget,SIGNAL(destroyed(QObject*)),mdidesktop->parent()->parent(),SLOT(on_closeSubWindow()));
-
     return widget;
 }
