@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     //Set window title
     this->setWindowTitle(filename + " - FreeGM");
 
+    mainwindow = this;
+
     this->showMaximized();
 
     //Populate resource tree
