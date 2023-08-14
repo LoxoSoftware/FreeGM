@@ -21,6 +21,7 @@ set(PROJECT_SOURCES
         objecteditor.h objecteditor.cpp objecteditor.ui
         roomeditor.h roomeditor.cpp roomeditor.ui
         eventpicker.h eventpicker.cpp eventpicker.ui
+        roomview.h roomview.cpp roomview.ui
         resources.qrc
 )
 
