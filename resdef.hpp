@@ -102,3 +102,27 @@ public:
         folder_index= tree_item->parent()->indexOfChild(tree_item);
     }
 };
+
+class GMInstance
+{
+public:
+    int x;
+    int y;
+    GMObject* object;
+};
+
+class GMRoomSettings
+{
+public:
+    GMRoom* target_room;
+    int width;
+    int height;
+    int snapX;
+    int snapY;
+    GMObject* selected_object;
+    QList<GMInstance> instances;
+    GMRoomSettings()
+    {
+
+    }
+};
