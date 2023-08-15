@@ -7,8 +7,7 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 
-QMainWindow* mainwindow;
-
+extern QMainWindow* mainwindow;
 extern QTreeWidgetItem* folder_objects;
 extern GMResource* treeitem(QTreeWidgetItem* item);
 
