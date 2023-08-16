@@ -18,18 +18,8 @@ public:
         tree_item->setText(0, name);
         tree_item->treeWidget()->setCurrentItem(tree_item);
     }
-    int getFolderIndex()
-    {
-        return folder_index;
-    }
-    QTreeWidgetItem* getFolder()
-    {
-        return tree_item->parent();
-    }
-    QTreeWidgetItem* getTreeItem()
-    {
-        return tree_item;
-    }
+    int getFolderIndex() { return folder_index; }
+    QTreeWidgetItem* getTreeItem() { return tree_item; }
 protected:
     QTreeWidgetItem* tree_item;
     int folder_index;
@@ -77,11 +67,23 @@ public:
     }
 };
 
+class GMInstance
+{
+public:
+    int x;
+    int y;
+    GMObject* object;
+};
+
 class GMRoom : public GMResource
 {
 public:
     int room_width = 640;
     int room_height = 480;
+    int room_snapX = 32;
+    int room_snapY = 32;
+    bool room_grid = true;
+    QList<GMInstance> instances;
     QColor back_color = QColor::fromRgb(0,255,255);
     GMRoom(QTreeWidgetItem* tree_item)
     {
@@ -103,14 +105,6 @@ public:
     }
 };
 
-class GMInstance
-{
-public:
-    int x;
-    int y;
-    GMObject* object;
-};
-
 class GMRoomSettings
 {
 public:
@@ -119,10 +113,8 @@ public:
     int height;
     int snapX;
     int snapY;
+    bool drawGrid;
     GMObject* selected_object;
     QList<GMInstance> instances;
-    GMRoomSettings()
-    {
-
-    }
+    GMRoomSettings() {}
 };
