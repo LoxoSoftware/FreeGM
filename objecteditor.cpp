@@ -11,8 +11,9 @@
 
 class GMObject;
 extern GMResource* treeitem(QTreeWidgetItem* item);
+extern QTreeWidgetItem* folder_sprites;
 
-ObjectEditor::ObjectEditor(GMObject* object, QTreeWidgetItem* sprite_folder, QWidget *parent) :
+ObjectEditor::ObjectEditor(GMObject* object, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ObjectEditor)
 {
@@ -23,7 +24,7 @@ ObjectEditor::ObjectEditor(GMObject* object, QTreeWidgetItem* sprite_folder, QWi
         return;
     }
     this->object = object;
-    this->sprite_folder = sprite_folder;
+    this->sprite_folder = folder_sprites;
     ui->setupUi(this);
     std::cout << "Loading object: " << this->object->name.toStdString() << std::endl;
 

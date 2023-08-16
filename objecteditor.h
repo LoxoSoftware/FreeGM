@@ -20,7 +20,7 @@ class ObjectEditor : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ObjectEditor(GMObject* object, QTreeWidgetItem* sprite_folder, QWidget *parent = nullptr);
+    explicit ObjectEditor(GMObject* object, QWidget *parent = nullptr);
     ~ObjectEditor();
 
 private slots:
