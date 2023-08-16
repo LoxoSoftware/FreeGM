@@ -119,9 +119,9 @@ QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by
     if (item->parent() == folder_sprites)
         widget = new SpriteEditor((GMSprite*)treeitem(item)); else
     if (item->parent() == folder_objects)
-        widget = new ObjectEditor((GMObject*)treeitem(item), folder_sprites); else
+        widget = new ObjectEditor((GMObject*)treeitem(item)); else
     if (item->parent() == folder_rooms)
-        widget = new RoomEditor(); else
+        widget = new RoomEditor((GMRoom*)treeitem(item)); else
     if (item->parent() == folder_constants)
         widget = new ConstantEditor(); else
     return nullptr;
