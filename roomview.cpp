@@ -28,27 +28,45 @@ void RoomView::mouseMoveEvent(QMouseEvent* event)
 
 void RoomView::mousePressEvent(QMouseEvent* event)
 {
-    //this->close();
-    //QPixmap pix= QPixmap(":/icons/sprite");
-    //int mouse_x = event->x();
-    //int mouse_y = event->y();
-    //QGraphicsItem* item= new QGraphicsPixmapItem(pix);
-    //item->setPos(event->localPos());
-    //scene->addItem(item);
+    if (event->button()==Qt::LeftButton)
+        instance_add(event->x(), event->y());
+    else
+    if (event->button()==Qt::RightButton)
+        instance_remove(event->x(), event->y(), false);
 
-    //Place instances
+    redraw();
+}
 
+void RoomView::instance_add(int mouse_x, int mouse_y)
+{
     if (transport->selected_object == nullptr)
         return;
-
     GMInstance* inst;
     transport->instances += GMInstance();
     inst= &transport->instances.last();
-    inst->x= event->x()-(event->x()%transport->snapX);
-    inst->y= event->y()-(event->y()%transport->snapY);
+    inst->x= mouse_x-(mouse_x%transport->snapX);
+    inst->y= mouse_y-(mouse_y%transport->snapY);
     inst->object= transport->selected_object;
+}
 
-    redraw();
+void RoomView::instance_remove(int mouse_x, int mouse_y, bool all)
+{
+    for (int i=0; i<transport->instances.count(); i++)
+    {
+        GMInstance* inst= &transport->instances[i];
+        QImage instimg;
+        inst->object->image? instimg=inst->object->image->image : instimg=QImage(":/icons/question");
+
+        if ( mouse_x >= inst->x &&
+             mouse_x <= inst->x+instimg.width() &&
+             mouse_y >= inst->y &&
+             mouse_y <= inst->y+instimg.height()
+            )
+        {
+            transport->instances.removeAt(i);
+            if (!all) break;
+        }
+    }
 }
 
 void RoomView::redraw()
@@ -63,7 +81,10 @@ void RoomView::redraw()
 
     for (int i=0; i<transport->instances.count(); i++)
     {
-
+        //Draw the instances, continue if instance is outside the room
+        if (transport->instances[i].x > transport->width ||
+            transport->instances[i].y > transport->height)
+            continue;
         QPixmap pix;
         if (transport->instances[i].object->image) //Only load the image if the object
                                                    //has a sprite associated to it;
@@ -76,6 +97,7 @@ void RoomView::redraw()
         scene->addItem(item);
     }
 
+    if (transport->drawGrid)
     for (int iy=0; iy<transport->height; iy+=transport->snapY)
     {
         scene->addLine(0,iy,transport->width,iy,pen);

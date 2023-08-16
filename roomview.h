@@ -34,6 +34,9 @@ private:
     QBrush bru_fg;
     QBrush bru_bg;
     GMRoomSettings* transport;
+
+    void instance_add(int mouse_x, int mouse_y);
+    void instance_remove(int mouse_x, int mouse_y, bool all);
 };
 
 #endif // ROOMVIEW_H
