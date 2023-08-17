@@ -65,9 +65,9 @@ void SpriteEditor::on_btnLoadSprite_clicked()
     fd->setOption(QFileDialog::DontUseNativeDialog, true);
     QString temp_filename = fd->getOpenFileName(this, "Load a sprite",
                                            ".",
-                                           "*.png");
-    temp_icon.addFile(temp_filename);
+                                           "Supported image format (*.png *.jpg *.jpeg *.bmp *.svg)");
     temp_image.load(temp_filename);
+    temp_icon= QIcon(QPixmap::fromImage(temp_image));
     ui->btnLoadSprite->setIcon(temp_icon);
 }
 
