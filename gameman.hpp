@@ -143,7 +143,7 @@ int game_save()
         f->setFileName(gamepath+"/constants/"+cc->name);
         f->open(QIODevice::WriteOnly);
         QString data= QString::number(cc->getFolderIndex())+"\n"+
-                       QString::number(cc->value);
+                       cc->value;
         f->write(data.toLocal8Bit().data());
         f->close();
     }

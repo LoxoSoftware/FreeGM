@@ -94,7 +94,7 @@ public:
 class GMConstant : public GMResource
 {
 public:
-    double value= 0.0;
+    QString value= "";
     GMConstant(QTreeWidgetItem* tree_item)
     {
         name= tree_item->text(0);
@@ -118,3 +118,4 @@ public:
 };
 
 #endif // RESDEF_H
+
