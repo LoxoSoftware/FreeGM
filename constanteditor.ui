@@ -52,7 +52,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Value</string>
+     <string>Expression</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="txtCname">

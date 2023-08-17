@@ -175,7 +175,7 @@ QTreeWidgetItem* resources_loaditem(QString name, QTreeWidgetItem* folder)
         f.open(QFile::ReadOnly);
         ((GMConstant*)newres)->name= name;
         /*Discard folder index*/ f.readLine();
-        ((GMConstant*)newres)->value= std::stod(f.readLine().toStdString());
+        ((GMConstant*)newres)->value= f.readLine();
         f.close();
     }
     else
@@ -221,7 +221,7 @@ QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by
     if (item->parent() == folder_rooms)
         widget = new RoomEditor((GMRoom*)treeitem(item)); else
     if (item->parent() == folder_constants)
-        widget = new ConstantEditor(); else
+        widget = new ConstantEditor((GMConstant*)treeitem(item)); else
     return nullptr;
 
     QMdiSubWindow* newwindow =
@@ -238,3 +238,4 @@ QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by
 }
 
 #endif // RESMAN_HPP
+

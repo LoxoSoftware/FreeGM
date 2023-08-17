@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "resdef.hpp"
+
 namespace Ui {
 class ConstantEditor;
 }
@@ -12,7 +14,7 @@ class ConstantEditor : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ConstantEditor(QWidget *parent = nullptr);
+    explicit ConstantEditor(GMConstant* cc, QWidget *parent = nullptr);
     ~ConstantEditor();
 
 private slots:
@@ -20,6 +22,7 @@ private slots:
 
 private:
     Ui::ConstantEditor *ui;
+    GMConstant* cc;
 };
 
 #endif // CONSTANTEDITOR_H
