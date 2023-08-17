@@ -26,8 +26,8 @@
    <string>FreeGM</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="applications-development">
-    <normaloff>.</normaloff>.</iconset>
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/object</normaloff>:/icons/object</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">
@@ -36,8 +36,8 @@ background-color: rgb(181, 181, 181);
 color: rgb(0, 0, 0);
 border-top-color: white;
 border-right-color: white;
-border-bottom-color: gray;
-border-left-color: gray;
+border-bottom-color: rgb(127,127,127);
+border-left-color: rgb(127,127,127);
 alternate-background-color: rgb(255, 255, 255);
 font-size:14px;
 }
@@ -51,18 +51,18 @@ background-color: white;
 border-radius: 0px;
 }
 QLineEdit, QTreeWidget, QSpinBox, QScrollArea,
-QListView, QTextEdit {
+QListView, QTextEdit, QPlainTextEdit {
 background-color: rgba(255,255,255,.5);
 border: 2px solid;
-border-top-color: gray;
-border-right-color: gray;
+border-top-color: rgb(127,127,127);
+border-right-color: rgb(127,127,127);
 border-bottom-color: white;
 border-left-color: white;
 }
 QGroupBox {
 border: 2px solid;
-border-top-color: gray;
-border-right-color: gray;
+border-top-color: rgb(127,127,127);
+border-right-color: rgb(127,127,127);
 border-bottom-color: white;
 border-left-color: white;
 }
@@ -71,14 +71,14 @@ QHeaderView::section {
 border: 2px solid;
 border-top-color: white;
 border-right-color: white;
-border-bottom-color: gray;
-border-left-color: gray;
+border-bottom-color: rgb(127,127,127);
+border-left-color: rgb(127,127,127);
 background-color: rgb(181,181,181);
 }
 QPushButton:pressed, QComboBox:pressed {
 border: 2px solid;
-border-top-color: gray;
-border-right-color: gray;
+border-top-color: rgb(127,127,127);
+border-right-color: rgb(127,127,127);
 border-bottom-color: white;
 border-left-color: white;
 background-color: rgba(0,0,0,.10);
@@ -97,6 +97,19 @@ QTreeWidget::item:hover, QListWidget::item:hover {
 background-color: rgb(181,181,181);
 }
 QTreeWidget::item:selected, QListWidget::item:selected {
+background-color: rgb(0,0,127);
+}
+QProgressBar {
+border: 2px solid;
+border-top-color: rgb(127,127,127);
+border-right-color: rgb(127,127,127);
+border-bottom-color: white;
+border-left-color: white;
+margin: 4px;
+text-align: center;
+color:white;
+}
+QProgressBar::chunk {
 background-color: rgb(0,0,127);
 }</string>
   </property>
@@ -361,7 +374,7 @@ background-color: rgb(0,0,127);
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/icons/run</normaloff>:/icons/run</iconset>
+       <normaloff>:/icons/cancel</normaloff>:/icons/cancel</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -461,7 +474,7 @@ background-color: rgb(0,0,127);
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="bntRun_2">
+    <widget class="QPushButton" name="bntRun">
      <property name="geometry">
       <rect>
        <x>300</x>
@@ -490,7 +503,7 @@ background-color: rgb(0,0,127);
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit">
+    <widget class="QLineEdit" name="txtTarget">
      <property name="geometry">
       <rect>
        <x>170</x>
@@ -523,7 +536,7 @@ background-color: rgb(0,0,127);
      <x>0</x>
      <y>0</y>
      <width>979</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebug">
