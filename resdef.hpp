@@ -1,8 +1,6 @@
 #ifndef RESDEF_HPP
 #define RESDEF_HPP
 
-#endif // RESDEF_H
-
 #include <QApplication>
 #include <QResource>
 #include <QColor>
@@ -118,3 +116,5 @@ public:
     QList<GMInstance> instances;
     GMRoomSettings() {}
 };
+
+#endif // RESDEF_H

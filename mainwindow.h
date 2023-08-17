@@ -19,7 +19,10 @@ public:
 public slots:
     void on_closeSubWindow();
 
-private slots:
+    void on_btnSave_clicked();
+
+    void on_bntRun_clicked();
+
     void on_btnAddSprite_released();
 
     void on_btnAddObject_released();
@@ -31,6 +34,12 @@ private slots:
     void on_trwResources_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
     void on_actionCreate_new_triggered();
+
+private slots:
+    void on_btnNew_clicked();
+
+private slots:
+    void on_btnLoad_clicked();
 
 private:
     Ui::MainWindow *ui;
