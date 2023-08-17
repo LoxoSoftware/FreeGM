@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         roomeditor.h roomeditor.cpp roomeditor.ui
         eventpicker.h eventpicker.cpp eventpicker.ui
         roomview.h roomview.cpp roomview.ui
+        compiledialog.h compiledialog.cpp compiledialog.ui
         resources.qrc
 )
 
@@ -44,6 +45,7 @@ else()
     else()
         add_executable(FreeGM
             ${PROJECT_SOURCES}
+            gameman.hpp
         )
     endif()
 endif()
