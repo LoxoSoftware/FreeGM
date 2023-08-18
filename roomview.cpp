@@ -56,6 +56,9 @@ void RoomView::instance_remove(int mouse_x, int mouse_y, bool all)
         GMInstance* inst= &transport->instances[i];
         QImage instimg;
         inst->object->image? instimg=inst->object->image->image : instimg=QImage(":/icons/question");
+        if (inst->object->image) //Crop the image according to its frame count
+                                 //to avoid huge selection areas
+            instimg= instimg.copy(0,0,instimg.width()/inst->object->image->frames,instimg.height());
 
         if ( mouse_x >= inst->x &&
              mouse_x <= inst->x+instimg.width() &&
@@ -79,6 +82,10 @@ void RoomView::redraw()
     QPen pen= QPen(QColor::fromRgb(0,0,0), 1);
     scene->clear();
 
+    //Draw a grid tile onto a pixmap
+    QPixmap grid_pix= QPixmap(":/gfx/fastgrid");
+    grid_pix= grid_pix.copy(0,0,transport->snapX,transport->snapY);
+
     for (int i=0; i<transport->instances.count(); i++)
     {
         //Draw the instances, continue if instance is outside the room
@@ -88,7 +95,17 @@ void RoomView::redraw()
         QPixmap pix;
         if (transport->instances[i].object->image) //Only load the image if the object
                                                    //has a sprite associated to it;
+        {
             pix= QPixmap::fromImage(transport->instances[i].object->image->image);
+
+            if (transport->instances[i].object->image->frames>1)
+            {
+                //Crop the image to the first frame (if it has more than one)
+                GMSprite* objspr= transport->instances[i].object->image;
+                pix= pix.copy(0,0,objspr->image.width()/objspr->frames,
+                               objspr->image.height());
+            }
+        }
         else
             pix= QPixmap(":/icons/question");
 
@@ -97,13 +114,16 @@ void RoomView::redraw()
         scene->addItem(item);
     }
 
-    if (transport->drawGrid)
+    if (transport->drawGrid && (transport->snapX>2 && transport->snapY>2))
     for (int iy=0; iy<transport->height; iy+=transport->snapY)
     {
-        scene->addLine(0,iy,transport->width,iy,pen);
+        //scene->addLine(0,iy,transport->width,iy,pen);
         for (int ix=0; ix<transport->width; ix+=transport->snapX)
         {
-            scene->addLine(ix,0,ix,transport->height,pen);
+            //scene->addLine(ix,0,ix,transport->height,pen);
+            QGraphicsPixmapItem* grid_item= new QGraphicsPixmapItem(grid_pix);
+            grid_item->setOffset(ix,iy);
+            scene->addItem(grid_item);
         }
     }
 }
