@@ -4,6 +4,7 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QErrorMessage>
+#include <QTimerEvent>
 
 #include <iostream>
 
@@ -32,6 +33,7 @@ SpriteEditor::SpriteEditor(GMSprite* sprite, QWidget *parent) :
     ui->chkAnimate->setChecked(this->sprite->animated);
 
     on_spbFrames_valueChanged(ui->spbFrames->value());
+    on_chkAnimate_stateChanged(0);
 }
 
 SpriteEditor::~SpriteEditor()
@@ -71,11 +73,48 @@ void SpriteEditor::on_btnLoadSprite_clicked()
     ui->btnLoadSprite->setIcon(temp_icon);
 }
 
-
 void SpriteEditor::on_spbFrames_valueChanged(int arg1)
 {
-    ui->scrFrameSel->setVisible(arg1 > 1);
+    ui->scrFrameSel->setVisible(arg1 > 1 && !ui->chkAnimate->isChecked());
     ui->scrFrameSel->setMaximum(ui->spbFrames->value());
     ui->scrFrameSel->setMinimum(ui->spbFrames->minimum());
+    //Crop the image
+    temp_icon.detach();
+    QPixmap newimg= QPixmap::fromImage(temp_image);
+    temp_icon= QIcon(newimg.copy((temp_image.width()/arg1)*0,0,
+                                  temp_image.width()/arg1,temp_image.height()));
+    ui->scrFrameSel->setValue(0);
+    ui->btnLoadSprite->setIcon(temp_icon);
+}
+
+void SpriteEditor::on_scrFrameSel_valueChanged(int value)
+{
+    //Crop the image
+    temp_icon.detach();
+    QPixmap newimg= QPixmap::fromImage(temp_image);
+    temp_icon= QIcon(newimg.copy((temp_image.width()/ui->spbFrames->value())*(value-1),0,
+                                  temp_image.width()/ui->spbFrames->value(),temp_image.height()));
+    ui->btnLoadSprite->setIcon(temp_icon);
+}
+
+void SpriteEditor::timerEvent(QTimerEvent* event)
+{
+    ui->scrFrameSel->setValue(ui->scrFrameSel->value()+1);
+    if (ui->scrFrameSel->value() >= ui->scrFrameSel->maximum())
+        ui->scrFrameSel->setValue(ui->scrFrameSel->minimum());
+}
+
+void SpriteEditor::on_chkAnimate_stateChanged(int arg1)
+{
+    if (ui->chkAnimate->isChecked())
+    {
+        timer_id= this->startTimer(100);
+        ui->scrFrameSel->setVisible(false);
+    }
+    else
+    {
+        this->killTimer(timer_id);
+        ui->scrFrameSel->setVisible(ui->spbFrames->value()>1);
+    }
 }
 
