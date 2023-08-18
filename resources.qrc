@@ -12,4 +12,7 @@
         <file alias="cancel">ico/cancel.png</file>
         <file alias="question">ico/question.png</file>
     </qresource>
+    <qresource prefix="/gfx">
+        <file alias="fastgrid">gfx/fastgrid.png</file>
+    </qresource>
 </RCC>
