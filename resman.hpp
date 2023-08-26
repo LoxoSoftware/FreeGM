@@ -194,6 +194,17 @@ QTreeWidgetItem* resources_loaditem(QString name, QTreeWidgetItem* folder)
     return newitem;
 }
 
+int resources_delitem(QTreeWidgetItem* item)
+{
+    //Returns the index of the item removed on success,
+    //returns -N on error.
+    int ind= resource_index(item->text(0));
+    if (ind < 0) return -1; //Item not found error
+    resources.removeAt(ind);
+    item->parent()->removeChild(item);
+    return ind;
+}
+
 /*
 QWidget* window_open(int wintype, QMdiArea* mdidesktop, QObject* resptr = nullptr) //Reference by int
 {

@@ -169,7 +169,11 @@ void MainWindow::on_actionDelete_triggered()
         return;
     }
 
-
-    //item->parent()->removeChild();
+    if (resources_delitem(item) < 0)
+    {
+        //something went wrong
+        QMessageBox::information(this, "Error deleting an item", "Something went wrong!");
+        return;
+    }
 }
 
