@@ -51,15 +51,20 @@ GMResource* resource_find(QString name)
     return nullptr;
 }
 
-GMResource* treeitem(QTreeWidgetItem* item)
+GMResource* resource_find(QTreeWidgetItem* item)
 {
-    /*for (int i=0; i<tree->children().count(); i++)
-    {
-        if ((QTreeWidgetItem*)tree->children()[i] == item)
-            return &resources[i];
-    }*/
-    std::cout << "Found resource: " << item->text(0).toStdString() << std::endl;
     return resource_find(item->text(0));
+}
+
+int resource_index(QString name)
+{
+    for (int i=0; i<resources.count(); i++)
+    {
+        if (resources[i]->name == name)
+            return i;
+    }
+
+    return -1;
 }
 
 QTreeWidgetItem* resources_newitem(QString default_name, QTreeWidgetItem* folder)
@@ -215,13 +220,13 @@ QWidget* window_open(QTreeWidgetItem* item, QMdiArea* mdidesktop) //Reference by
     QWidget* widget;
 
     if (item->parent() == folder_sprites)
-        widget = new SpriteEditor((GMSprite*)treeitem(item)); else
+        widget = new SpriteEditor((GMSprite*)resource_find(item)); else
     if (item->parent() == folder_objects)
-        widget = new ObjectEditor((GMObject*)treeitem(item)); else
+        widget = new ObjectEditor((GMObject*)resource_find(item)); else
     if (item->parent() == folder_rooms)
-        widget = new RoomEditor((GMRoom*)treeitem(item)); else
+        widget = new RoomEditor((GMRoom*)resource_find(item)); else
     if (item->parent() == folder_constants)
-        widget = new ConstantEditor((GMConstant*)treeitem(item)); else
+        widget = new ConstantEditor((GMConstant*)resource_find(item)); else
     return nullptr;
 
     QMdiSubWindow* newwindow =

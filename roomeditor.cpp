@@ -9,7 +9,7 @@
 
 extern QMainWindow* mainwindow;
 extern QTreeWidgetItem* folder_objects;
-extern GMResource* treeitem(QTreeWidgetItem* item);
+extern GMResource* resource_find(QTreeWidgetItem* item);
 
 RoomEditor::RoomEditor(GMRoom* room, QWidget *parent) :
     QMainWindow(parent),
@@ -43,8 +43,8 @@ RoomEditor::RoomEditor(GMRoom* room, QWidget *parent) :
     ui->cmbObjectSel->addItem("<nothing>");
     for (int i=0; i<folder_objects->childCount(); i++)
     {
-        if(((GMObject*)treeitem(folder_objects->child(i)))->image)
-            ui->cmbObjectSel->addItem(((GMObject*)treeitem(folder_objects->child(i)))->image->icon, folder_objects->child(i)->text(0));
+        if(((GMObject*)resource_find(folder_objects->child(i)))->image)
+            ui->cmbObjectSel->addItem(((GMObject*)resource_find(folder_objects->child(i)))->image->icon, folder_objects->child(i)->text(0));
         else //If the object does not have a sprite associated to it
             ui->cmbObjectSel->addItem(QIcon(":/icons/object"), folder_objects->child(i)->text(0));
     }
@@ -81,7 +81,7 @@ void RoomEditor::on_cmbObjectSel_currentIndexChanged(int index)
     if (index == 0) //Selected '<nothing>'
         transport.selected_object= nullptr;
     else
-        transport.selected_object= (GMObject*)treeitem(folder_objects->child(index-1));
+        transport.selected_object= (GMObject*)resource_find(folder_objects->child(index-1));
 }
 
 

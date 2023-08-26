@@ -10,7 +10,7 @@
 #include <iostream>
 
 class GMObject;
-extern GMResource* treeitem(QTreeWidgetItem* item);
+extern GMResource* resource_find(QTreeWidgetItem* item);
 extern QTreeWidgetItem* folder_sprites;
 
 ObjectEditor::ObjectEditor(GMObject* object, QWidget *parent) :
@@ -31,7 +31,7 @@ ObjectEditor::ObjectEditor(GMObject* object, QWidget *parent) :
     //Assemble sprite sel. combo box
     ui->cmbSpriteSel->addItem("<no sprite>");
     for (int i=0; i<sprite_folder->childCount(); i++)
-        ui->cmbSpriteSel->addItem(((GMSprite*)treeitem(sprite_folder->child(i)))->icon, sprite_folder->child(i)->text(0));
+        ui->cmbSpriteSel->addItem(((GMSprite*)resource_find(sprite_folder->child(i)))->icon, sprite_folder->child(i)->text(0));
 
     //Loading data from sprite
     ui->txtObjName->setText(this->object->name);
@@ -68,7 +68,7 @@ void ObjectEditor::on_btnOk_clicked()
 {
     object->name= ui->txtObjName->text();
     if (ui->cmbSpriteSel->currentIndex() > 0) //If the sprite is set (cmb not set to "<no sprite>")
-        object->image= (GMSprite*)treeitem(sprite_folder->child(ui->cmbSpriteSel->currentIndex()-1));
+        object->image= (GMSprite*)resource_find(sprite_folder->child(ui->cmbSpriteSel->currentIndex()-1));
     else
         object->image= nullptr;
     object->visible= ui->chkVisible->isChecked();
