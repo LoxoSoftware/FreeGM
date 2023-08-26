@@ -47,7 +47,8 @@ border-top-color: white;
 border-right-color: white;
 border-bottom-color: #666666;
 border-left-color: #666666;
-background-color: white;
+background-color: rgb(0,0,63);
+color: white;
 border-radius: 0px;
 }
 QLineEdit, QTreeWidget, QSpinBox, QScrollArea,
@@ -536,7 +537,7 @@ background-color: rgb(0,0,127);
      <x>0</x>
      <y>0</y>
      <width>979</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebug">
@@ -554,14 +555,15 @@ background-color: rgb(0,0,127);
     <property name="title">
      <string>Debug</string>
     </property>
+    <addaction name="actionDisable_theme"/>
    </widget>
    <widget class="QMenu" name="menuResource">
     <property name="title">
      <string>Resource</string>
     </property>
     <addaction name="actionEdit"/>
+    <addaction name="actionDuplicate"/>
     <addaction name="actionDelete"/>
-    <addaction name="actionDelete_2"/>
     <addaction name="separator"/>
     <addaction name="actionCreate_new"/>
    </widget>
@@ -576,6 +578,10 @@ background-color: rgb(0,0,127);
    </property>
   </action>
   <action name="actionCreate_new">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/document_new</normaloff>:/icons/document_new</iconset>
+   </property>
    <property name="text">
     <string>Create new</string>
    </property>
@@ -583,7 +589,11 @@ background-color: rgb(0,0,127);
     <string>Ctrl+Shift+N</string>
    </property>
   </action>
-  <action name="actionDelete">
+  <action name="actionDuplicate">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/document_open</normaloff>:/icons/document_open</iconset>
+   </property>
    <property name="text">
     <string>Duplicate</string>
    </property>
@@ -591,7 +601,11 @@ background-color: rgb(0,0,127);
     <string>Ctrl+Shift+D</string>
    </property>
   </action>
-  <action name="actionDelete_2">
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/cancel</normaloff>:/icons/cancel</iconset>
+   </property>
    <property name="text">
     <string>Delete</string>
    </property>
@@ -600,11 +614,20 @@ background-color: rgb(0,0,127);
    </property>
   </action>
   <action name="actionEdit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/sprite</normaloff>:/icons/sprite</iconset>
+   </property>
    <property name="text">
     <string>Edit</string>
    </property>
    <property name="shortcut">
     <string>Shift+Enter</string>
+   </property>
+  </action>
+  <action name="actionDisable_theme">
+   <property name="text">
+    <string>Toggle custom theme</string>
    </property>
   </action>
  </widget>

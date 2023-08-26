@@ -143,3 +143,33 @@ void MainWindow::on_btnNew_clicked()
     this->setWindowTitle(gamename+"- FreeGM");
 }
 
+void MainWindow::on_actionDisable_theme_triggered()
+{
+    if (this->styleSheet().startsWith("/*"))
+        this->setStyleSheet((this->styleSheet()).remove(0,2));
+    else
+        this->setStyleSheet((this->styleSheet()).insert(0,"/*"));
+}
+
+
+void MainWindow::on_actionDelete_triggered()
+{
+    //Delete a resource
+    if (ui->trwResources->selectedItems().count() <= 0)
+    {
+        //No folder/item selected
+        QMessageBox::information(this, "Error deleting an item", "Please select an item to delete.");
+        return;
+    }
+    QTreeWidgetItem* item = ui->trwResources->selectedItems()[0];
+    if (item->parent()==folder_sprites->parent())
+    {
+        //If the item selected is a folder
+        QMessageBox::information(this, "Error deleting an item", "Please select an item to delete.\nCannot delete a resource folder.");
+        return;
+    }
+
+
+    //item->parent()->removeChild();
+}
+
