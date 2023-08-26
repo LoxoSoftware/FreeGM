@@ -81,7 +81,7 @@ int game_save()
     //Save sprites
     for (int i=0; i<folder_sprites->childCount(); i++)
     {
-        GMSprite* spr= ((GMSprite*)treeitem(folder_sprites->child(i)));
+        GMSprite* spr= ((GMSprite*)resource_find(folder_sprites->child(i)));
         spr->image.save(gamepath+"/sprites/"+spr->name+".png");
         f->setFileName(gamepath+"/sprites/"+spr->name);
         f->open(QIODevice::WriteOnly);
@@ -94,7 +94,7 @@ int game_save()
     //Save objects
     for (int i=0; i<folder_objects->childCount(); i++)
     {
-        GMObject* obj= ((GMObject*)treeitem(folder_objects->child(i)));
+        GMObject* obj= ((GMObject*)resource_find(folder_objects->child(i)));
         f->setFileName(gamepath+"/objects/"+obj->name);
         f->open(QIODevice::WriteOnly);
         QString data= QString::number(obj->getFolderIndex())+"\n"+
@@ -115,7 +115,7 @@ int game_save()
     //Save rooms
     for (int i=0; i<folder_rooms->childCount(); i++)
     {
-        GMRoom* room= ((GMRoom*)treeitem(folder_rooms->child(i)));
+        GMRoom* room= ((GMRoom*)resource_find(folder_rooms->child(i)));
         f->setFileName(gamepath+"/rooms/"+room->name);
         f->open(QIODevice::WriteOnly);
         QString data= QString::number(room->getFolderIndex())+"\n"+
@@ -139,7 +139,7 @@ int game_save()
     //Save constants
     for (int i=0; i<folder_constants->childCount(); i++)
     {
-        GMConstant* cc= ((GMConstant*)treeitem(folder_constants->child(i)));
+        GMConstant* cc= ((GMConstant*)resource_find(folder_constants->child(i)));
         f->setFileName(gamepath+"/constants/"+cc->name);
         f->open(QIODevice::WriteOnly);
         QString data= QString::number(cc->getFolderIndex())+"\n"+
@@ -210,10 +210,22 @@ int game_compile()
         if (game_save())
             return 1; //New game is not saved, abort
 
-    QDialog* cdial= new CompileDialog(mainwindow);
+    CompileDialog* cdial= new CompileDialog(mainwindow);
     cdial->setParent(mainwindow, Qt::Dialog);
     cdial->setModal(true);
     cdial->open();
 
+    cdial->console_clear();
+    cdial->console_write("Project saved.");
+
+    cdial->console_write("Preparing build directory...");
+    QDir().mkpath(gamepath+"build/");
+    QFile f_gmkl= QFile(gamepath+"build/gmklib-sdl.h");
+    f_gmkl.open(QIODevice::WriteOnly);
+    f_gmkl.write(QResource(":/res/gmklib-sdl").uncompressedData());
+    f_gmkl.close();
+
+    cdial->set_progress(100);
+    cdial->console_write("Done! Starting game...");
     return 0;
 }
