@@ -15,4 +15,7 @@
     <qresource prefix="/gfx">
         <file alias="fastgrid">gfx/fastgrid.png</file>
     </qresource>
+    <qresource prefix="/res">
+        <file alias="gmklib-sdl">res/gmklib-sdl.h</file>
+    </qresource>
 </RCC>
