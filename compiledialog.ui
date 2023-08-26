@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>CompileDialog</class>
  <widget class="QDialog" name="CompileDialog">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +26,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Compiling game...</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/run</normaloff>:/icons/run</iconset>
   </property>
   <widget class="QPushButton" name="btnStop">
    <property name="geometry">
@@ -78,8 +85,7 @@
 color: rgb(181, 181, 181);</string>
    </property>
    <property name="plainText">
-    <string>Compiling your game...
-</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="label">

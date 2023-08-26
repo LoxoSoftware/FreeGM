@@ -15,6 +15,10 @@ public:
     explicit CompileDialog(QWidget *parent = nullptr);
     ~CompileDialog();
 
+    void console_write(QString str);
+    void console_clear();
+    void set_progress(int perc);
+
 private slots:
     void on_btnStop_clicked();
 
