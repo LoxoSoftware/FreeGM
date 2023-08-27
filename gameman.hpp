@@ -9,6 +9,8 @@
 #include <QInputDialog>
 #include <QFile>
 #include <QIODevice>
+#include <QProcess>
+#include <QThread>
 
 #include "resman.hpp"
 #include "compiledialog.h"
@@ -215,17 +217,125 @@ int game_compile()
     cdial->setModal(true);
     cdial->open();
 
+    cdial->set_progress(0);
     cdial->console_clear();
     cdial->console_write("Project saved.");
 
     cdial->console_write("Preparing build directory...");
     QDir().mkpath(gamepath+"build/");
+    QDir().mkpath(gamepath+"build/gfx/");
+
+    //Add the makefile
+    cdial->console_write("Adding the makefile...");
+    QFile f_make= QFile(gamepath+"build/Makefile");
+    f_make.open(QIODevice::WriteOnly);
+    f_make.write("BIN_NAME := ");
+    f_make.write(gamename.toLocal8Bit());
+    f_make.write("\nall:\n");
+    f_make.write("\tgcc main.cpp -o $(BIN_NAME) -s -L -lSDL2_image -lSDL2_ttf -lSDL2 -lm ");
+    f_make.close();
+
+    //Add game library file
+    cdial->console_write("Adding game library...");
     QFile f_gmkl= QFile(gamepath+"build/gmklib-sdl.h");
     f_gmkl.open(QIODevice::WriteOnly);
     f_gmkl.write(QResource(":/res/gmklib-sdl").uncompressedData());
     f_gmkl.close();
 
+    cdial->console_write("converting images...");
+    //Export images to csource (GIMP-like format)
+    for (int i=0; i<folder_sprites->childCount(); i++)
+    {
+        QTreeWidgetItem* item= folder_sprites->child(i);
+        GMSprite* spr= (GMSprite*)resource_find(folder_sprites->child(i));
+        QFile f_sout= QFile(gamepath+"build/gfx/"+spr->name+".h");
+        cdial->console_write("  writing "+item->text(0)+".h ...");
+        if (!spr)
+        {
+            cdial->console_write("Error writing sprite data!");
+            return 1;
+        }
+        spr->image= spr->image.convertToFormat(QImage::Format_RGBA8888);
+        f_sout.open(QIODevice::WriteOnly);
+        QString data= "SDL_Surface* "+item->text(0)+";\n"+
+                "static const struct {\n\tunsigned int  width;\n"+
+                "\tunsigned int  height;\n\tunsigned int  bytes_per_pixel; /* 2:RGB16, 3:RGB, 4:RGBA */\n"
+                "\tunsigned char pixel_data["+QString::number(spr->image.width())+"*"+
+                QString::number(spr->image.height())+"*"+QString::number(spr->image.depth()/8)+"+1];\n"+
+                "} "+spr->name+"_s"+" = {\n";
+        f_sout.write(data.toLocal8Bit().data());
+        data= "\t"+QString::number(spr->image.width())+","+QString::number(spr->image.height())+
+                ","+QString::number(spr->image.depth()/8)+",\n\t";
+        f_sout.write(data.toLocal8Bit().data());
+        data= "";
+        const unsigned char* img_bytes= spr->image.bits();
+        for (long i=0; i<spr->image.sizeInBytes(); i++)
+        {
+            data+= "0x"+QString::number(img_bytes[i],16)+",";
+            if (i%16 == 15) data+= "\n\t";
+        }
+        f_sout.write(data.toLocal8Bit().data());
+        f_sout.write("\n};");
+
+        f_sout.close();
+    }
+
+    //Build main.cpp
+    cdial->console_write("Building main.cpp...");
+    QFile f_src= QFile(gamepath+"build/main.cpp");
+    f_src.open(QIODevice::WriteOnly);
+    QString data= "#include \"gmklib-sdl.h\"\n\n";
+    for (int i=0; i<folder_sprites->childCount(); i++)
+    {
+        GMSprite* spr= (GMSprite*)resource_find(folder_sprites->child(i));
+        data+="#include \"gfx/"+spr->name+".h\"\n";
+    }
+    data+= "\nint __loop= 1;\n";
+    f_src.write(data.toLocal8Bit().data());
+    data= "int main(int argc, char* argv[])\n{\n\tdisplay_init(720, 540, \""+gamename+"\", 0);\n";
+    for (int i=0; i<folder_sprites->childCount(); i++)
+    {
+        GMSprite* spr= (GMSprite*)resource_find(folder_sprites->child(i));
+        data+= "\tsprite_add("+spr->name+", "+spr->name+"_s);\n";
+    }
+    data+= "\n\twhile (__loop)\n\t{\n\t\tdo_update();\n\t\tevent_poll();\n\t\tif (check_exit()) __loop= 0;\n\n";
+    //Draw all the objects in order (for testing)
+    for (int i=0, ix=0; i<folder_objects->childCount(); i++)
+    {
+        GMObject* obj= (GMObject*)resource_find(folder_objects->child(i));
+        if (!obj->image) continue;
+        GMSprite* spr= obj->image;
+        data+= "\t\tdraw_sprite("+spr->name+", 0,"+QString::number(spr->frames)+
+                ", "+QString::number(ix)+", 0"+");\n";
+        ix+= spr->image.width();
+    }
+    data+= "\t\tdisplay_render();\n\t}\n";
+    data+= "\n\tdisplay_destroy();\n\treturn 0;\n}";
+    f_src.write(data.toLocal8Bit().data());
+    f_src.close();
+
+    cdial->console_write("make -C "+gamepath+"build/");
+    cdial->set_progress(50);
+    QProcess p_gpp= QProcess();
+    QStringList args= QStringList();
+    args+= "-C"+gamepath+"build/";
+    p_gpp.start(QString("make"), args);
+    p_gpp.waitForStarted();
+    p_gpp.waitForFinished();
+    int ret= p_gpp.exitCode();
+    if (ret)
+    {
+        cdial->console_write("ERROR! Command returned "+QString::number(ret)+"!");
+        return 1;
+    }
+
     cdial->set_progress(100);
     cdial->console_write("Done! Starting game...");
+
+    QProcess* p_game= new QProcess();
+    p_game->start(gamepath+"build/"+gamename, QStringList());
+    p_game->waitForStarted();
+    p_game->waitForFinished();
+    cdial->close();
     return 0;
 }
