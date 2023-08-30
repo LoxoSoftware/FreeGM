@@ -7,6 +7,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include "roomorderer.h"
+
 #include <QMessageBox>
 #include <QDialog>
 
@@ -175,5 +177,13 @@ void MainWindow::on_actionDelete_triggered()
         QMessageBox::information(this, "Error deleting an item", "Something went wrong!");
         return;
     }
+}
+
+
+void MainWindow::on_btnRoomOrder_clicked()
+{
+    RoomOrderer* ro= new RoomOrderer(folder_rooms, this);
+    ro->setModal(true);
+    ro->show();
 }
 

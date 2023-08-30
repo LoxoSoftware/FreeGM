@@ -35,6 +35,8 @@ private slots:
 
     void on_actionDelete_triggered();
 
+    void on_btnRoomOrder_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

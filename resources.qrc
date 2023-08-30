@@ -11,9 +11,14 @@
         <file alias="document_save">ico/document_save.png</file>
         <file alias="cancel">ico/cancel.png</file>
         <file alias="question">ico/question.png</file>
+        <file alias="room_order">ico/room_order.png</file>
+        <file alias="game_settings">ico/game_settings.png</file>
+        <file alias="arrow_down32">ico/arrow_down32.png</file>
+        <file alias="arrow_up32">ico/arrow_up32.png</file>
     </qresource>
     <qresource prefix="/gfx">
         <file alias="fastgrid">gfx/fastgrid.png</file>
+        <file alias="transparency">gfx/transparency.png</file>
     </qresource>
     <qresource prefix="/res">
         <file alias="gmklib-sdl">res/gmklib-sdl.h</file>

@@ -14,7 +14,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
         main.cpp
-        resman.hpp resdef.hpp
+        resman.hpp resdef.hpp gameman.hpp
         mainwindow.cpp mainwindow.h mainwindow.ui
         spriteeditor.h spriteeditor.cpp spriteeditor.ui
         constanteditor.h constanteditor.cpp constanteditor.ui
@@ -23,6 +23,7 @@ set(PROJECT_SOURCES
         eventpicker.h eventpicker.cpp eventpicker.ui
         roomview.h roomview.cpp roomview.ui
         compiledialog.h compiledialog.cpp compiledialog.ui
+        roomorderer.h roomorderer.cpp roomorderer.ui
         resources.qrc
 )
 
@@ -45,7 +46,6 @@ else()
     else()
         add_executable(FreeGM
             ${PROJECT_SOURCES}
-            gameman.hpp
         )
     endif()
 endif()
