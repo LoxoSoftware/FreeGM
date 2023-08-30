@@ -83,6 +83,7 @@ public:
     bool room_grid = true;
     QList<GMInstance> instances;
     QColor back_color = QColor::fromRgb(0,255,255);
+    bool fill_back = true;
     GMRoom(QTreeWidgetItem* tree_item)
     {
         name= tree_item->text(0);
@@ -112,6 +113,8 @@ public:
     int snapX;
     int snapY;
     bool drawGrid;
+    QColor back_color;
+    bool fill_back;
     GMObject* selected_object;
     QList<GMInstance> instances;
     GMRoomSettings() {}
