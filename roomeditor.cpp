@@ -6,6 +6,9 @@
 #include <QColor>
 #include <QGraphicsView>
 #include <QGraphicsItem>
+#include <QColorDialog>
+
+#include <iostream>
 
 extern QMainWindow* mainwindow;
 extern QTreeWidgetItem* folder_objects;
@@ -21,6 +24,8 @@ RoomEditor::RoomEditor(GMRoom* room, QWidget *parent) :
 
     disconnectControls= true;
 
+    ui->dckTop->setTitleBarWidget(new QWidget(ui->dckTop));
+
     //Load data from room
     ui->txtRoomName->setText(room->name);
     transport.instances= room->instances;
@@ -29,6 +34,8 @@ RoomEditor::RoomEditor(GMRoom* room, QWidget *parent) :
     ui->spbSnapWidth->setValue(room->room_snapX);
     ui->spbSnapHeight->setValue(room->room_snapY);
     ui->chkGrid->setChecked(room->room_grid);
+    ui->btnVoidColor->setStyleSheet("background-color: "+room->back_color.name()+";");
+    ui->chkFillVoid->setChecked(room->fill_back);
 
     transport.width = ui->spbRoomWidth->value();
     transport.height = ui->spbRoomHeight->value();
@@ -36,6 +43,8 @@ RoomEditor::RoomEditor(GMRoom* room, QWidget *parent) :
     transport.snapY = ui->spbSnapHeight->value();
     transport.drawGrid = ui->chkGrid;
     transport.selected_object = nullptr;
+    transport.back_color = room->back_color;
+    transport.fill_back = ui->chkFillVoid->isChecked();
 
     roomView = new RoomView(&transport, ui->centralwidget);
 
@@ -72,6 +81,8 @@ void RoomEditor::on_btnOk_clicked()
     transport.target_room->room_snapX= ui->spbSnapWidth->value();
     transport.target_room->room_snapY= ui->spbSnapHeight->value();
     transport.target_room->room_grid= ui->chkGrid->isChecked();
+    transport.target_room->back_color= transport.back_color;
+    transport.target_room->fill_back= ui->chkFillVoid->isChecked();
     transport.target_room->update();
     this->close();
 }
@@ -123,6 +134,24 @@ void RoomEditor::on_chkGrid_stateChanged(int arg1)
     if (disconnectControls)
         return;
     transport.drawGrid = ui->chkGrid->isChecked();
+    roomView->redraw();
+}
+
+
+void RoomEditor::on_btnVoidColor_clicked()
+{
+    QColorDialog cdial= QColorDialog(transport.back_color);
+    transport.back_color= cdial.getColor();
+    ui->btnVoidColor->setStyleSheet("background-color: "+transport.back_color.name()+";");
+    roomView->redraw();
+}
+
+
+void RoomEditor::on_chkFillVoid_stateChanged(int arg1)
+{
+    if (disconnectControls)
+        return;
+    transport.fill_back = ui->chkFillVoid->isChecked();
     roomView->redraw();
 }
 

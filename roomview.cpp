@@ -79,8 +79,21 @@ void RoomView::redraw()
     this->setSceneRect(0,0,this->width(),this->height());
 
     bru_fg.setColor(QColor::fromRgb(0,0,0));
-    QPen pen= QPen(QColor::fromRgb(0,0,0), 1);
+    bru_bg.setColor(transport->back_color);
+    bru_fg.setStyle(Qt::SolidPattern);
+    bru_bg.setStyle(Qt::SolidPattern);
+    pen.setColor(QColor::fromRgb(0,0,0));
+    pen.setWidth(1);
     scene->clear();
+
+    if (!transport->fill_back)
+    {
+        QImage tr_tl= QImage(":/gfx/transparency");
+        bru_bg= QBrush(tr_tl);
+    }
+
+    //Draw void color
+    scene->addRect(0,0,transport->width,transport->height,QPen(bru_fg,0),bru_bg);
 
     //Draw a grid tile onto a pixmap
     QPixmap grid_pix= QPixmap(":/gfx/fastgrid");

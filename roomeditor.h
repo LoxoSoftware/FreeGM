@@ -38,6 +38,10 @@ private slots:
 
     void on_chkGrid_stateChanged(int arg1);
 
+    void on_btnVoidColor_clicked();
+
+    void on_chkFillVoid_stateChanged(int arg1);
+
 private:
     Ui::RoomEditor *ui;
     GMRoomSettings transport;

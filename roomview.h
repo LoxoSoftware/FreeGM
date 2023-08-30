@@ -31,8 +31,9 @@ private slots:
 private:
     Ui::RoomView *ui;
     QGraphicsScene* scene = new QGraphicsScene();
-    QBrush bru_fg;
-    QBrush bru_bg;
+    QBrush bru_fg= QBrush();
+    QBrush bru_bg= QBrush();
+    QPen pen= QPen();
     GMRoomSettings* transport;
 
     void instance_add(int mouse_x, int mouse_y);
