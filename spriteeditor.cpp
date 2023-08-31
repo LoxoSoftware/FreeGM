@@ -99,9 +99,10 @@ void SpriteEditor::on_scrFrameSel_valueChanged(int value)
 
 void SpriteEditor::timerEvent(QTimerEvent* event)
 {
-    ui->scrFrameSel->setValue(ui->scrFrameSel->value()+1);
     if (ui->scrFrameSel->value() >= ui->scrFrameSel->maximum())
         ui->scrFrameSel->setValue(ui->scrFrameSel->minimum());
+    else
+        ui->scrFrameSel->setValue(ui->scrFrameSel->value()+1);
 }
 
 void SpriteEditor::on_chkAnimate_stateChanged(int arg1)
