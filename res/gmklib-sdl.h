@@ -24,8 +24,38 @@ int SCREEN_HEIGHT;
 int __temp__w, __temp__h;
 SDL_Surface* __temp__surface;
 
-SDL_Surface* __gmklib__sprites[128];
+typedef struct __gmklib__sprite_s
+{
+    SDL_Surface* surface;
+    int frames;
+} __gmklib__sprite;
+
+typedef struct __gmklib__object_s
+{
+    __gmklib__sprite* sprite;
+    bool visible;
+} __gmklib__object;
+
+typedef struct __gmklib__instance_s
+{
+    struct __gmklib__object_s* object;
+    int x;
+    int y;
+} __gmklib__instance;
+
+typedef struct __gmklib__room_s
+{
+    int width;
+    int height;
+    struct __gmklib__instance_s* instances[2048];
+    SDL_Color back_color;
+    bool fill_back;
+} __gmklib__room;
+
+__gmklib__sprite* __gmklib__sprites[128];
 int __gmklib__lastsprite= 0;
+
+__gmklib__room* current_room= NULL;
 
 #define TARGET_FPS          300
 bool __gmklib__usevsync = true;
@@ -85,7 +115,7 @@ SDL_Window* display_init(int screen_width, int screen_height, char* title, int a
     {
         printf("[GMKLib] ERROR! Error initializing SDL: %s\n", SDL_GetError());
     }
-    
+
     if (__GMKLIB__DEBUG) printf("[GMKLib] Initializing window...\n");
     __gmklib__window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, args);
     if (__gmklib__window == NULL)
@@ -93,7 +123,7 @@ SDL_Window* display_init(int screen_width, int screen_height, char* title, int a
         printf("[GMKLib] CRITICAL! Error initializing window: %s\n", SDL_GetError());
         exit(1);
     }
-    
+
     if (__GMKLIB__DEBUG) printf("[GMKLib] Initializing renderer...\n");
     __gmklib__bgsurface= SDL_CreateRGBSurface(0, screen_width, screen_height, 24, 0, 0, 0, 0);
     __gmklib__renderer= SDL_CreateRenderer(__gmklib__window, -1, SDL_RENDERER_ACCELERATED | __gmklib__usevsync*SDL_RENDERER_PRESENTVSYNC);
@@ -115,10 +145,10 @@ SDL_Window* display_init(int screen_width, int screen_height, char* title, int a
     TTF_Init();
 
     if (__GMKLIB__DEBUG) printf("[GMKLib] Done. Took %d milliseconds.\n", SDL_GetTicks());
-    
+
     keyboard_poll();
     event_poll();
-    
+
     return __gmklib__window;
 }
 
@@ -146,7 +176,7 @@ void display_destroy()
     SDL_DestroyTexture(__gmklib__rendtexture);
     SDL_FreeSurface(__gmklib__bgsurface);
     for (int i=0; i<__gmklib__lastsprite; i++)
-        SDL_FreeSurface(__gmklib__sprites[i]);
+        SDL_FreeSurface(__gmklib__sprites[i]->surface);
     if (__GMKLIB__DEBUG) printf("[GMKLib] Freed sprites.\n");
     SDL_DestroyWindow(__gmklib__window);
     TTF_Quit();
@@ -230,10 +260,10 @@ void draw_clear_alpha(u8 r, u8 g, u8 b, u8 alpha)
 void draw_rectangle(int x1, int y1, int x2, int y2, bool outline)
 {
     SDL_Rect rect;
-    
+
     rect.x= x1,    rect.y= y1,
     rect.w= x2-x1, rect.h= y2-y1;
-    
+
     if (outline)
         SDL_RenderDrawRect(__gmklib__renderer, &rect);
     else
@@ -243,16 +273,16 @@ void draw_rectangle(int x1, int y1, int x2, int y2, bool outline)
 void draw_rectangle_surface(int x1, int y1, int x2, int y2/*, bool astexture*/) //It's always filled
 {
     SDL_Surface* surface= SDL_CreateRGBSurface(0, x2-x1, y2-y1, 32, 0, 0, 0, 0);
-    
+
     SDL_SetSurfaceBlendMode(surface, __gmklib__blendmode);
-    
+
     SDL_Rect rect;
-    
+
     rect.x= x1,    rect.y= y1,
     rect.w= x2-x1, rect.h= y2-y1;
-    
+
     SDL_FillRect(surface, NULL,  SDL_MapRGB(surface->format, __gmklib__dcol_r, __gmklib__dcol_g, __gmklib__dcol_b));
-    
+
 
     SDL_Texture* texture= SDL_CreateTextureFromSurface(__gmklib__renderer, surface);
     SDL_SetTextureAlphaMod(texture, __gmklib__dcol_a);
@@ -261,7 +291,7 @@ void draw_rectangle_surface(int x1, int y1, int x2, int y2/*, bool astexture*/) 
     SDL_DestroyTexture(texture);
 
     //SDL_BlitSurface(surface, NULL, __gmklib__bgsurface, &rect);
-    
+
     SDL_FreeSurface(surface);
 }
 
@@ -285,7 +315,7 @@ void draw_pixel(int x1, int y1, int x2, int y2, u8 r, u8 g, u8 b)
 void draw_text_stretched(TTF_Font* font, int x, int y, int w, int h, char* str, ...)
 {
     va_list valist;
-	va_start(valist, (int)str[0]);
+    va_start(valist, (int)str[0]);
     char txt[256]; memset(txt,'\0',sizeof(txt));//sprintf(txt, str, va_arg(valist, int));
 
     SDL_Color col = { __gmklib__dcol_r, __gmklib__dcol_g, __gmklib__dcol_b };
@@ -295,8 +325,8 @@ void draw_text_stretched(TTF_Font* font, int x, int y, int w, int h, char* str, 
     for (int ich= 0, i=0; str[ich]!='\0' && i<sizeof(txt); ich++)
     {
         if (str[ich] == '&' && str[ich+1] == 'n') { txt[i]='\n'; i++; ich++; } else
-		if (str[ich] == '%' && str[ich+1] == 'd') { int n= va_arg(valist, int); i+=StrAppendIntAt(txt,i,n); ich++; }
-		else { txt[i]= str[ich]; i++; }//strncpy(txt,str,sizeof(txt));
+        if (str[ich] == '%' && str[ich+1] == 'd') { int n= va_arg(valist, int); i+=StrAppendIntAt(txt,i,n); ich++; }
+        else { txt[i]= str[ich]; i++; }//strncpy(txt,str,sizeof(txt));
     }
 
     SDL_Surface* surfaceMessage= TTF_RenderText_Solid(font, txt, col);
@@ -317,18 +347,11 @@ void draw_text_stretched(TTF_Font* font, int x, int y, int w, int h, char* str, 
 
 #define draw_text(font, x, y, str, more ...)                                    TTF_SizeText(font, str, &__temp__w, &__temp__h); \
                                                                                 draw_text_stretched(font, x, y, __temp__w, __temp__h, str, more)
-                                                        
+
 #define draw_text_scaled(font, x, y, xscale, yscale, str, more ...)             TTF_SizeText(font, str, &__temp__w, &__temp__h); \
                                                                                 draw_text_stretched(font, x, y, __temp__w*xscale, __temp__h*yscale, str, more)
 
-
-#define sprite_add(name, spr_s) \
-    name= SDL_CreateRGBSurface(0, spr_s.width, spr_s.height, spr_s.bytes_per_pixel*8, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000); \
-    memcpy((u8*)name->pixels, (u8*)spr_s.pixel_data, spr_s.width*spr_s.height*spr_s.bytes_per_pixel+1); \
-    __gmklib__sprites[__gmklib__lastsprite]= name; \
-    __gmklib__lastsprite++
-
-void draw_sprite_manual_surface(SDL_Surface* spr, int top, int left, int w, int h, int x, int y, float xscale, float yscale, unsigned char alpha, SDL_Surface* dest)
+void draw_sprite_manual_surface(__gmklib__sprite* spr, int top, int left, int w, int h, int x, int y, float xscale, float yscale, unsigned char alpha, SDL_Surface* dest)
 {
     SDL_Rect src_rect;
         src_rect.x=left, src_rect.y=top,
@@ -336,11 +359,11 @@ void draw_sprite_manual_surface(SDL_Surface* spr, int top, int left, int w, int 
     SDL_Rect dest_rect;
         dest_rect.x=x, dest_rect.y=y,
         dest_rect.w=(int)((float)w*xscale), dest_rect.h=(int)((float)h*yscale);
-    SDL_SetSurfaceAlphaMod(spr, alpha);
-    SDL_BlitSurface(spr, &src_rect, dest, &dest_rect);
+    SDL_SetSurfaceAlphaMod(spr->surface, alpha);
+    SDL_BlitSurface(spr->surface, &src_rect, dest, &dest_rect);
 }
 
-void draw_sprite_manual(SDL_Surface* spr, int left, int top, int w, int h, int x, int y,
+void draw_sprite_manual(__gmklib__sprite* spr, int left, int top, int w, int h, int x, int y,
                         float xscale, float yscale, double angle, int col_r, int col_g, int col_b, unsigned char alpha)
 {
     SDL_Rect src_rect;
@@ -350,10 +373,10 @@ void draw_sprite_manual(SDL_Surface* spr, int left, int top, int w, int h, int x
         dest_rect.x=x, dest_rect.y=y,
         dest_rect.w=abs((int)((float)w*xscale)), dest_rect.h=abs((int)((float)h*yscale));
 
-    SDL_SetSurfaceBlendMode(spr, __gmklib__blendmode);
-    //SDL_SetSurfaceColorMod(spr, col_r, col_g, col_b);
-    SDL_SetSurfaceColorMod(spr, c_white);
-    SDL_Texture* texture= SDL_CreateTextureFromSurface(__gmklib__renderer, spr);
+    SDL_SetSurfaceBlendMode(spr->surface, __gmklib__blendmode);
+    //SDL_SetSurfaceColorMod(spr->surface, col_r, col_g, col_b);
+    SDL_SetSurfaceColorMod(spr->surface, c_white);
+    SDL_Texture* texture= SDL_CreateTextureFromSurface(__gmklib__renderer, spr->surface);
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     SDL_SetTextureColorMod(texture, col_r, col_g, col_b);
     SDL_SetTextureAlphaMod(texture, alpha);
@@ -363,11 +386,11 @@ void draw_sprite_manual(SDL_Surface* spr, int left, int top, int w, int h, int x
     SDL_DestroyTexture(texture);
 }
 
-#define draw_sprite(spr, subimg, subno, x, y) \
-    draw_sprite_manual(spr, subimg*(spr->w/subno), 0, spr->w/subno, spr->h, x, y, 1, 1, 0, c_white, 255)
+#define draw_sprite(spr, subimg, x, y) \
+    draw_sprite_manual(spr, subimg*(spr->surface->w/spr->frames), 0, spr->surface->w/spr->frames, spr->surface->h, x, y, 1, 1, 0, c_white, 255)
 
-#define draw_sprite_ext(spr, subimg, subno, x, y, xscale, yscale, rot, color, alpha) \
-    draw_sprite_manual(spr, subimg*(spr->w/subno), 0, spr->w/subno, spr->h, x, y, xscale, yscale, rot, color, alpha)
+#define draw_sprite_ext(spr, subimg, x, y, xscale, yscale, rot, color, alpha) \
+    draw_sprite_manual(spr, subimg*(spr->surface->w/spr->frames), 0, spr->surface->w/spr->frames, spr->surface->h, x, y, xscale, yscale, rot, color, alpha)
 
 ///// Input /////
 
@@ -412,15 +435,15 @@ void sleep(u16 frames)
 void do_update()
 {
     for (int i=0; i < 12; i++)
-		if (alarm[i] > 0) alarm[i]--;
+        if (alarm[i] > 0) alarm[i]--;
 }
 
 void screen_wait_vsync()
 {
-	keyboard_poll();
+    keyboard_poll();
     event_poll();
 
-	sleep(1);
+    sleep(1);
 }
 
 int event_poll()
@@ -443,18 +466,18 @@ int check_exit()
 int StrAppendIntAt(char* str, int pos, int n)
 {
     short inlen= log10(n)+1;
-	unsigned int na[inlen];
-	int tin= n;
+    unsigned int na[inlen];
+    int tin= n;
 
-	if (n > 0) {
-		for(int i=0; i<=inlen;i++) {
-			if (tin < 1) {inlen= i; break;}
-			na[i]= tin%10;
-			tin/=10;
-		}
-	} else if (n == 0) {inlen=1; na[0]= 0;}
+    if (n > 0) {
+        for(int i=0; i<=inlen;i++) {
+            if (tin < 1) {inlen= i; break;}
+            na[i]= tin%10;
+            tin/=10;
+        }
+    } else if (n == 0) {inlen=1; na[0]= 0;}
 
-	for (int i=0; i<=inlen; i++)
+    for (int i=0; i<=inlen; i++)
         str[pos+i]= '0'+na[inlen-i-1];
 
     return inlen;
@@ -463,4 +486,72 @@ int StrAppendIntAt(char* str, int pos, int n)
 bool inside_rectangle(int x1, int y1, int x2, int y2, int w, int h)
 {
     return (x1 >= x2 && x1 <= x2+w) && (y1 >= y2 && y1 <= y2+h);
+}
+
+///// Game /////
+
+#define sprite_add(name, spr_s, subno) /*sprite_add(__gmklib__sprite, spr_struct, int)*/ \
+    name.frames= subno; \
+    name.surface= SDL_CreateRGBSurface(0, spr_s.width, spr_s.height, spr_s.bytes_per_pixel*8, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000); \
+    memcpy((u8*)name.surface->pixels, (u8*)spr_s.pixel_data, spr_s.width*spr_s.height*spr_s.bytes_per_pixel+1); \
+    __gmklib__sprites[__gmklib__lastsprite]= &name; \
+    __gmklib__lastsprite++
+
+/*
+#define room_add(name, _width, _height, back_color_rgb, _fill_back) \
+    name.width= _width; \
+    name.height= _height; \
+    name.back_color= { back_color_rgb }; \
+    name.fill_back= _fill_back; \
+    for (int __i=0; __i<2048; __i++) name.instances[__i]= NULL
+*/
+
+#define object_add(name, spr, _visible) \
+    name.sprite= spr; \
+    name.visible= _visible
+
+#define room_add(name, _width, _height, back_color_r, back_color_g, back_color_b, _fill_back) \
+    name.width= _width; \
+    name.height= _height; \
+    name.back_color.r= back_color_r; \
+    name.back_color.g= back_color_g; \
+    name.back_color.b= back_color_b; \
+    name.fill_back= _fill_back; \
+    for (int __i=0; __i<sizeof(name.instances)/sizeof(__gmklib__instance*); __i++) name.instances[__i]= NULL
+
+int instance_create(int x, int y, __gmklib__object* obj)
+{
+    for (int i=0; i<sizeof(current_room->instances)/sizeof(__gmklib__instance*); i++)
+    {
+        if (!current_room->instances[i])
+        {
+            __gmklib__instance* newinst= (__gmklib__instance*)malloc(sizeof(__gmklib__instance));
+            newinst->x= x;
+            newinst->y= y;
+            newinst->object= obj;
+            current_room->instances[i]= newinst;
+            return i;
+        }
+    }
+
+    return -1; //Instance limit reached
+}
+
+#define room_goto(room) current_room= &room
+
+void draw_current_room()
+{
+    __gmklib__room* room= current_room;
+
+    if (room->fill_back)
+        draw_clear(room->back_color.r, room->back_color.g, room->back_color.b);
+
+    for (int i=0; i<sizeof(current_room->instances)/sizeof(__gmklib__instance*); i++)
+    {
+        if (!current_room->instances[i]) continue;
+
+        __gmklib__instance* inst= current_room->instances[i];
+
+        draw_sprite(inst->object->sprite, 0, inst->x, inst->y);
+    }
 }
