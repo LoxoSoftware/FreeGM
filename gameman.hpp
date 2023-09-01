@@ -267,12 +267,13 @@ int game_compile()
         QString data= "__gmklib__sprite "+item->text(0)+";\n"+
                 "static const struct {\n\tunsigned int  width;\n"+
                 "\tunsigned int  height;\n\tunsigned int  bytes_per_pixel; /* 2:RGB16, 3:RGB, 4:RGBA */\n"
+                "\tunsigned int  frames;\n"
                 "\tunsigned char pixel_data["+QString::number(spr->image.width())+"*"+
                 QString::number(spr->image.height())+"*"+QString::number(spr->image.depth()/8)+"+1];\n"+
                 "} "+spr->name+"_s"+" = {\n";
         f_sout.write(data.toLocal8Bit().data());
         data= "\t"+QString::number(spr->image.width())+","+QString::number(spr->image.height())+
-                ","+QString::number(spr->image.depth()/8)+",\n\t";
+                ","+QString::number(spr->image.depth()/8)+","+QString::number(spr->frames)+",\n\t";
         f_sout.write(data.toLocal8Bit().data());
         data= "";
         const unsigned char* img_bytes= spr->image.bits();
@@ -286,22 +287,57 @@ int game_compile()
 
         f_sout.close();
     }
-
     cdial->console_write("Adding objects...");
     //Export objects
     for (int i=0; i<folder_objects->childCount(); i++)
     {
+        QList<QString> events= QList<QString>();
+        events+="onCreate";
+        events+="onBeginFrame";
+        events+="onEndFrame";
+        events+="onDraw";
+        events+="onDestroy";
         QTreeWidgetItem* item= folder_objects->child(i);
         GMObject* obj= (GMObject*)resource_find(folder_objects->child(i));
         QFile f_oout= QFile(gamepath+"build/objects/"+obj->name+".h");
         cdial->console_write("  writing "+item->text(0)+".h ...");
         f_oout.open(QIODevice::WriteOnly);
-        QString data= "__gmklib__object "+obj->name+";\n//Under construction";
+        QString data= "__gmklib__object "+obj->name+";";
+        for (int ii=0; ii<obj->events.count(); ii++)
+            data+="\nvoid __"+obj->name+"__"+obj->events[ii].text()+"(__gmklib__instance* self);";
+        data+="\nstatic struct {\n\tstruct __gmklib__sprite_s* sprite;\n\tbool visible;\n";
+        for (int ii=0; ii<events.count(); ii++)
+            data+="\tvoid (*"+events[ii]+")(__gmklib__instance*);\n";
+        data+="} "+obj->name+"_s = {\n\t&"+obj->image->name+","+
+                (obj->visible?QString("true"):QString("false"))+",\n";
         f_oout.write(data.toLocal8Bit().data());
+        data= "";
+        for (int ii=0; ii<events.count(); ii++)
+        {
+            //Find if the object has the trigger defined,
+            //if not, the fn pointer will point to NULL
+            bool found= false;
+            for (int iii=0; iii<obj->events.count(); iii++)
+            {
+                if (obj->events[iii].text() == events[ii])
+                {
+                    data+= "\t&__"+obj->name+"__"+obj->events[iii].text()+",\n";
+                    found=true;
+                }
+            }
+            if (!found) data+= "\tNULL,\n";
+        }
+        data+= "};\n";
+        f_oout.write(data.toLocal8Bit().data());
+        for (int ii=0; ii<obj->events.count(); ii++)
+        {
+            data="\nvoid __"+obj->name+"__"+obj->events[ii].text()+"(__gmklib__instance* self)\n{\n\t"+
+                    obj->event_code[ii]+"\n}\n";
+            f_oout.write(data.toLocal8Bit().data());
+        }
 
         f_oout.close();
     }
-
     cdial->console_write("Adding rooms...");
     //Export rooms
     for (int i=0; i<folder_rooms->childCount(); i++)
@@ -311,7 +347,23 @@ int game_compile()
         QFile f_rout= QFile(gamepath+"build/rooms/"+room->name+".h");
         cdial->console_write("  writing "+item->text(0)+".h ...");
         f_rout.open(QIODevice::WriteOnly);
-        QString data= "__gmklib__room "+room->name+";\n//Under construction";
+        QString data= "__gmklib__room "+room->name+";\n"+
+                "static struct {\n\tunsigned int width;\n\tunsigned int height;\n"+
+                "\tSDL_Color back_color; //NOTE: RGBA color\n\tbool fill_back;\n"+
+                "\tstruct __gmklib__instance_s instances["+QString::number(room->instances.count())+"];\n"+
+                "} "+room->name+"_s = {"+
+                "\n\t"+QString::number(room->room_width)+","+QString::number(room->room_height)+","+
+                QString::number(room->back_color.red())+","+QString::number(room->back_color.green())+","+
+                QString::number(room->back_color.blue())+",255,"+(room->fill_back?QString("true"):QString("false"));
+        f_rout.write(data.toLocal8Bit().data());
+        data= ",\n\t";
+        for (int i=0; i<room->instances.count(); i++)
+        {
+            data+="&"+room->instances[i].object->name+","+QString::number(room->instances[i].x)+
+                    ","+QString::number(room->instances[i].y)+",";
+            if (i%8 == 7) data+= "\n\t";
+        }
+        data+="\n};";
         f_rout.write(data.toLocal8Bit().data());
 
         f_rout.close();
@@ -343,29 +395,19 @@ int game_compile()
     for (int i=0; i<folder_sprites->childCount(); i++)
     {
         GMSprite* spr= (GMSprite*)resource_find(folder_sprites->child(i));
-        data+= "\tsprite_add("+spr->name+", "+spr->name+"_s, "+QString::number(spr->frames)+");\n";
+        data+= "\tsprite_add("+spr->name+", "+spr->name+"_s);\n";
     }
     for (int i=0; i<folder_objects->childCount(); i++)
     {
         GMObject* obj= (GMObject*)resource_find(folder_objects->child(i));
-        data+= "\tobject_add("+obj->name+", &"+obj->image->name+", "+(obj->visible?QString("true"):QString("false"))+");\n";
+        data+= "\tobject_add("+obj->name+", "+obj->name+"_s);\n";
     }
     for (int i=0; i<folder_rooms->childCount(); i++)
     {
         GMRoom* room= (GMRoom*)resource_find(folder_rooms->child(i));
-        data+= "\troom_add("+room->name+", "+QString::number(room->room_width)+", "+QString::number(room->room_height)
-                +", "+QString::number(room->back_color.red())+", "+QString::number(room->back_color.green())
-                +", "+QString::number(room->back_color.blue())+", "+(room->fill_back?QString("true"):QString("false"))+");\n";
+        data+= "\troom_add("+room->name+", "+room->name+"_s);\n";
     }
-    data+= "\tcurrent_room= &"+folder_rooms->child(0)->text(0)+";\n";
-    f_src.write(data.toLocal8Bit().data());
-    data= "";
-    GMRoom* first_room= (GMRoom*)resource_find(folder_rooms->child(0));
-    for (int i=0; i<first_room->instances.count(); i++)
-    {
-        data+= "\tinstance_create("+QString::number(first_room->instances[i].x)+", "+QString::number(first_room->instances[i].y)
-                +", &"+first_room->instances[i].object->name+");\n";
-    }
+    data+= "\troom_goto(&"+folder_rooms->child(0)->text(0)+");\n";
     f_src.write(data.toLocal8Bit().data());
     data = "\n\twhile (__loop)\n\t{\n\t\tdo_update();\n\t\tevent_poll();\n\t\tif (check_exit()) __loop= 0;\n\n";
     data+= "\t\tdraw_current_room();\n";
