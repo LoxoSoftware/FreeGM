@@ -33,7 +33,7 @@ ObjectEditor::ObjectEditor(GMObject* object, QWidget *parent) :
     for (int i=0; i<sprite_folder->childCount(); i++)
         ui->cmbSpriteSel->addItem(((GMSprite*)resource_find(sprite_folder->child(i)))->icon, sprite_folder->child(i)->text(0));
 
-    //Loading data from sprite
+    //Loading data from object
     ui->txtObjName->setText(this->object->name);
     if (this->object->image)
         ui->cmbSpriteSel->setCurrentIndex(this->object->image->getFolderIndex()+1);
