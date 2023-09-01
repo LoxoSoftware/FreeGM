@@ -30,18 +30,23 @@ typedef struct __gmklib__sprite_s
     int frames;
 } __gmklib__sprite;
 
-typedef struct __gmklib__object_s
-{
-    __gmklib__sprite* sprite;
-    bool visible;
-} __gmklib__object;
-
 typedef struct __gmklib__instance_s
 {
     struct __gmklib__object_s* object;
     int x;
     int y;
 } __gmklib__instance;
+
+typedef struct __gmklib__object_s
+{
+    __gmklib__sprite* sprite;
+    bool visible;
+    void (*onCreate)(__gmklib__instance*);
+    void (*onBeginFrame)(__gmklib__instance*);
+    void (*onEndFrame)(__gmklib__instance*);
+    void (*onDraw)(__gmklib__instance*);
+    void (*onDestroy)(__gmklib__instance*);
+} __gmklib__object;
 
 typedef struct __gmklib__room_s
 {
@@ -490,8 +495,8 @@ bool inside_rectangle(int x1, int y1, int x2, int y2, int w, int h)
 
 ///// Game /////
 
-#define sprite_add(name, spr_s, subno) /*sprite_add(__gmklib__sprite, spr_struct, int)*/ \
-    name.frames= subno; \
+#define sprite_add(name, spr_s) /*sprite_add(__gmklib__sprite, spr_struct)*/ \
+    name.frames= spr_s.frames; \
     name.surface= SDL_CreateRGBSurface(0, spr_s.width, spr_s.height, spr_s.bytes_per_pixel*8, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000); \
     memcpy((u8*)name.surface->pixels, (u8*)spr_s.pixel_data, spr_s.width*spr_s.height*spr_s.bytes_per_pixel+1); \
     __gmklib__sprites[__gmklib__lastsprite]= &name; \
@@ -506,11 +511,25 @@ bool inside_rectangle(int x1, int y1, int x2, int y2, int w, int h)
     for (int __i=0; __i<2048; __i++) name.instances[__i]= NULL
 */
 
-#define object_add(name, spr, _visible) \
-    name.sprite= spr; \
-    name.visible= _visible
+#define object_add(name, spr_s) \
+    name.sprite= spr_s.sprite; \
+    name.visible= spr_s.visible; \
+    name.onCreate= spr_s.onCreate; \
+    name.onBeginFrame= spr_s.onBeginFrame; \
+    name.onEndFrame= spr_s.onEndFrame; \
+    name.onDraw= spr_s.onDraw; \
+    name.onDestroy= spr_s.onDestroy;
 
-#define room_add(name, _width, _height, back_color_r, back_color_g, back_color_b, _fill_back) \
+#define room_add(name, room_s) \
+    name.width= room_s.width; \
+    name.height= room_s.height; \
+    name.back_color= room_s.back_color; \
+    name.fill_back= room_s.fill_back; \
+    for (int __i=0; __i<sizeof(name.instances)/sizeof(__gmklib__instance*); __i++) name.instances[__i]= NULL; \
+    for (int __i=0; __i<sizeof(room_s.instances)/sizeof(__gmklib__instance_s); __i++) \
+        name.instances[__i]= instance_create_to(room_s.instances[__i].x,room_s.instances[__i].y,room_s.instances[__i].object, &name)
+
+#define room_add_empty(name, _width, _height, back_color_r, back_color_g, back_color_b, _fill_back) \
     name.width= _width; \
     name.height= _height; \
     name.back_color.r= back_color_r; \
@@ -519,7 +538,7 @@ bool inside_rectangle(int x1, int y1, int x2, int y2, int w, int h)
     name.fill_back= _fill_back; \
     for (int __i=0; __i<sizeof(name.instances)/sizeof(__gmklib__instance*); __i++) name.instances[__i]= NULL
 
-int instance_create(int x, int y, __gmklib__object* obj)
+__gmklib__instance* instance_create(int x, int y, __gmklib__object* obj)
 {
     for (int i=0; i<sizeof(current_room->instances)/sizeof(__gmklib__instance*); i++)
     {
@@ -530,14 +549,49 @@ int instance_create(int x, int y, __gmklib__object* obj)
             newinst->y= y;
             newinst->object= obj;
             current_room->instances[i]= newinst;
-            return i;
+            if ((*obj->onCreate)) (*obj->onCreate)(newinst);
+            return newinst;
         }
     }
 
-    return -1; //Instance limit reached
+    return NULL; //Instance limit reached
 }
 
-#define room_goto(room) current_room= &room
+__gmklib__instance* instance_create_to(int x, int y, __gmklib__object* obj, __gmklib__room* room)
+{
+    for (int i=0; i<sizeof(room->instances)/sizeof(__gmklib__instance*); i++)
+    {
+        if (!room->instances[i])
+        {
+            __gmklib__instance* newinst= (__gmklib__instance*)malloc(sizeof(__gmklib__instance));
+            newinst->x= x;
+            newinst->y= y;
+            newinst->object= obj;
+            room->instances[i]= newinst;
+            //instances won't trigger automatically
+            //if ((*obj->onCreate)) (*obj->onCreate)(newinst);
+            return newinst;
+        }
+    }
+
+    return NULL; //Instance limit reached
+}
+
+void trigger_instances()
+{
+    for (int i=0; i<sizeof(current_room->instances)/sizeof(__gmklib__instance*); i++)
+        if (current_room->instances[i])
+        {
+            __gmklib__object* obj= current_room->instances[i]->object;
+            if ((*obj->onCreate)) (*obj->onCreate)(current_room->instances[i]);
+        }
+}
+
+void room_goto(__gmklib__room* room)
+{
+    current_room= room;
+    trigger_instances();
+}
 
 void draw_current_room()
 {
@@ -552,6 +606,9 @@ void draw_current_room()
 
         __gmklib__instance* inst= current_room->instances[i];
 
-        draw_sprite(inst->object->sprite, 0, inst->x, inst->y);
+        if (*inst->object->onBeginFrame) (*inst->object->onBeginFrame)(inst);
+
+        if (!(*inst->object->onDraw)) draw_sprite(inst->object->sprite, 0, inst->x, inst->y);
+        else  (*inst->object->onDraw)(inst);
     }
 }
