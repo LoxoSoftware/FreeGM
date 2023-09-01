@@ -15,6 +15,11 @@
         <file alias="game_settings">ico/game_settings.png</file>
         <file alias="arrow_down32">ico/arrow_down32.png</file>
         <file alias="arrow_up32">ico/arrow_up32.png</file>
+        <file alias="event_onBeginFrame">ico/event_onBeginStep.png</file>
+        <file alias="event_onCreate">ico/event_onCreate.png</file>
+        <file alias="event_onDestroy">ico/event_onDestroy.png</file>
+        <file alias="event_onDraw">ico/event_onDraw.png</file>
+        <file alias="event_onEndFrame">ico/event_onEndStep.png</file>
     </qresource>
     <qresource prefix="/gfx">
         <file alias="fastgrid">gfx/fastgrid.png</file>
