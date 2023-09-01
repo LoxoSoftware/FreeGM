@@ -54,7 +54,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/question</normaloff>:/icons/question</iconset>
+      <normaloff>:/icons/event_onCreate</normaloff>:/icons/event_onCreate</iconset>
     </property>
    </item>
    <item>
@@ -63,7 +63,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/question</normaloff>:/icons/question</iconset>
+      <normaloff>:/icons/event_onDestroy</normaloff>:/icons/event_onDestroy</iconset>
     </property>
    </item>
    <item>
@@ -72,7 +72,16 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/question</normaloff>:/icons/question</iconset>
+      <normaloff>:/icons/event_onBeginFrame</normaloff>:/icons/event_onBeginFrame</iconset>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>onDraw</string>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/icons/event_onDraw</normaloff>:/icons/event_onDraw</iconset>
     </property>
    </item>
    <item>
@@ -81,7 +90,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/question</normaloff>:/icons/question</iconset>
+      <normaloff>:/icons/event_onEndFrame</normaloff>:/icons/event_onEndFrame</iconset>
     </property>
    </item>
    <item>
