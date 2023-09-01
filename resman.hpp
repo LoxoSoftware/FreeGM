@@ -136,15 +136,16 @@ QTreeWidgetItem* resources_loaditem(QString name, QTreeWidgetItem* folder)
         {
             mstr= f.readLine(); mstr.chop(mstr.count()-mstr.indexOf('\n'));
             QString tstr= "";
-            ((GMObject*)newres)->events+=QListWidgetItem(QIcon(":/icons/question"),mstr);
+            QIcon tico= QIcon(QFile::exists(":/icons/event_"+mstr)?":/icons/event_"+mstr:":icons/question");
+            ((GMObject*)newres)->events+=QListWidgetItem(tico,mstr);
             char ch= ' '; //Set to anything other than 0 or -1
             while (ch != '\0' && ch != -1)
             {
                 f.getChar(&ch);
-                tstr+=ch;
+                if (ch != '\0') tstr+=ch;
             }
             ((GMObject*)newres)->event_code+=tstr;
-            /*Skip null char at the end*/f.getChar(&ch);
+            ///*Skip null char at the end*/f.getChar(&ch);
         }
         f.close();
     }else
