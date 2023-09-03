@@ -29,6 +29,9 @@ private slots:
     void on_lstEvents_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void on_btnAddEvent_clicked();
     void on_btnOk_clicked();
+    void on_btnRemEvent_clicked();
+
+    void on_btnVariables_clicked();
 
 private:
     Ui::ObjectEditor *ui;
@@ -36,6 +39,7 @@ private:
     QList<QListWidgetItem> events;
     QList<QString> event_code;
     QTreeWidgetItem* sprite_folder;
+    GMObjectVars transport;
 };
 
 #endif // OBJECTEDITOR_H

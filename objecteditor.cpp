@@ -2,6 +2,7 @@
 #include "ui_objecteditor.h"
 
 #include "eventpicker.h"
+#include "vardefiner.h"
 
 #include <QMessageBox>
 #include <QInputDialog>
@@ -49,6 +50,10 @@ ObjectEditor::ObjectEditor(GMObject* object, QWidget *parent) :
         this->event_code[i] = object->event_code[i];
         ui->lstEvents->addItem(&this->events.last());
     }
+    transport.variables.clear();
+    transport.variables_val.clear();
+    transport.variables.append(object->variables);
+    transport.variables_val.append(object->variables_val);
 
     //Disable the code editor (until a trigger is selected)
     ui->txtCode->setEnabled(false);
@@ -82,6 +87,10 @@ void ObjectEditor::on_btnOk_clicked()
         std::cout << object->event_code.count() << std::endl;
         object->event_code += this->event_code[i];
     }
+    object->variables.clear();
+    object->variables_val.clear();
+    object->variables.append(transport.variables);
+    object->variables_val.append(transport.variables_val);
     std::cout << "Saved object details!" << std::endl;
     object->update();
     this->close();
@@ -94,15 +103,6 @@ void ObjectEditor::on_btnAddEvent_clicked()
     idial->setParent(mainwindow, Qt::Dialog);
     idial->setModal(true);
     idial->open();
-    //this->setStyleSheet("QPushButton { padding: 6px; padding-left: 20px; padding-right: 20px; }");
-    //QString itext= idial->getText(this, "Add custom event", "Set condition for custom event");
-    //this->setStyleSheet("");
-    //if (itext == "")
-        //return;
-
-    //*events += itext;
-    //ui->lstEvents->addItem(events->last());
-    //ui->lstEvents->item(ui->lstEvents->count()-1)->setIcon(QIcon(":/icons/constant.png"));
 }
 
 void ObjectEditor::on_lstEvents_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
@@ -113,13 +113,13 @@ void ObjectEditor::on_lstEvents_currentItemChanged(QListWidgetItem *current, QLi
         return;
     }
     ui->txtCode->setEnabled(true);
+    ui->txtCode->setReadOnly(false);
     ui->txtCode->setText(event_code[ui->lstEvents->currentRow()]);
 }
 void ObjectEditor::on_lstEvents_itemClicked(QListWidgetItem *item)
 {
     ObjectEditor::on_lstEvents_currentItemChanged(item, nullptr);
 }
-
 
 void ObjectEditor::on_txtCode_textChanged()
 {
@@ -129,5 +129,27 @@ void ObjectEditor::on_txtCode_textChanged()
         return;
     }
     event_code[ui->lstEvents->currentRow()]= ui->txtCode->toPlainText();
+}
+
+void ObjectEditor::on_btnRemEvent_clicked()
+{
+    if (ui->lstEvents->selectedItems().count() <= 0)
+        return;
+    QMessageBox::StandardButton reply;
+    reply= QMessageBox::question(this,"Confirm event deletion","Do you really want to delete this event? All its code will be lost!", QMessageBox::Yes|QMessageBox::No);
+    if (reply != QMessageBox::Yes)
+        return;
+    int index= ui->lstEvents->currentIndex().row();
+    event_code.removeAt(index);
+    //events.removeAt(index);
+    ui->lstEvents->takeItem(index);
+}
+
+
+void ObjectEditor::on_btnVariables_clicked()
+{
+    VarDefiner* vdial= new VarDefiner(&transport, mainwindow);
+    vdial->setModal(true);
+    vdial->open();
 }
 
