@@ -24,6 +24,7 @@ set(PROJECT_SOURCES
         roomview.h roomview.cpp roomview.ui
         compiledialog.h compiledialog.cpp compiledialog.ui
         roomorderer.h roomorderer.cpp roomorderer.ui
+        vardefiner.h vardefiner.cpp vardefiner.ui
         resources.qrc
 )
 

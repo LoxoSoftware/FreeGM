@@ -30,11 +30,15 @@ typedef struct __gmklib__sprite_s
     int frames;
 } __gmklib__sprite;
 
+#define __GMKLIB__MAXINSTVARS 256
+
 typedef struct __gmklib__instance_s
 {
     struct __gmklib__object_s* object;
     int x;
     int y;
+    char** variables_name;
+    void** variables_ptr;
 } __gmklib__instance;
 
 typedef struct __gmklib__object_s
@@ -113,7 +117,7 @@ int mouse_x, mouse_y;
 ///// SDL Specific /////
 
 /**/void keyboard_poll(); int event_poll();
-SDL_Window* display_init(int screen_width, int screen_height, char* title, int args)
+SDL_Window* display_init(int screen_width, int screen_height, const char* title, int args)
 {
     if (__GMKLIB__DEBUG) printf("[GMKLib] Initializing SDL...\n");
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -548,6 +552,17 @@ __gmklib__instance* instance_create(int x, int y, __gmklib__object* obj)
             newinst->x= x;
             newinst->y= y;
             newinst->object= obj;
+            newinst->variables_name= (char**)malloc(sizeof(char*)*__GMKLIB__MAXINSTVARS+8);
+            newinst->variables_ptr= (void**)malloc(sizeof(void*)*__GMKLIB__MAXINSTVARS+8);
+            if (!newinst->variables_name||!newinst->variables_ptr)
+            {
+                printf("[GMKLib] ERROR! Cannot allocate variable memory for instance #%d",i);
+                continue;
+            }
+            for (int ii=0; ii<sizeof(*newinst->variables_name)/sizeof(char*); ii++)
+                newinst->variables_name[ii]= NULL;
+            for (int ii=0; ii<sizeof(*newinst->variables_ptr)/sizeof(void*); ii++)
+                newinst->variables_ptr[ii]= NULL;
             current_room->instances[i]= newinst;
             if ((*obj->onCreate)) (*obj->onCreate)(newinst);
             return newinst;
@@ -567,6 +582,17 @@ __gmklib__instance* instance_create_to(int x, int y, __gmklib__object* obj, __gm
             newinst->x= x;
             newinst->y= y;
             newinst->object= obj;
+            newinst->variables_name= (char**)malloc(sizeof(char*)*__GMKLIB__MAXINSTVARS+8);
+            newinst->variables_ptr= (void**)malloc(sizeof(void*)*__GMKLIB__MAXINSTVARS+8);
+            if (!newinst->variables_name||!newinst->variables_ptr)
+            {
+                printf("[GMKLib] ERROR! Cannot allocate variable memory for instance #%d",i);
+                continue;
+            }
+            for (int ii=0; ii<sizeof(newinst->variables_name)/sizeof(char*); ii++)
+                newinst->variables_name[ii]= NULL;
+            for (int ii=0; ii<sizeof(newinst->variables_ptr)/sizeof(void*); ii++)
+                newinst->variables_ptr[ii]= NULL;
             room->instances[i]= newinst;
             //instances won't trigger automatically
             //if ((*obj->onCreate)) (*obj->onCreate)(newinst);
@@ -577,6 +603,21 @@ __gmklib__instance* instance_create_to(int x, int y, __gmklib__object* obj, __gm
     return NULL; //Instance limit reached
 }
 
+void instance_destroy(__gmklib__instance* inst)
+{
+    __gmklib__object* obj= inst->object;
+    if ((*obj->onDestroy)) (*obj->onDestroy)(inst);
+    for (int i=0; i<sizeof(current_room->instances)/sizeof(__gmklib__instance*); i++)
+        if (current_room->instances[i]==inst) current_room->instances[i]=NULL;
+    for (int i=0; i<sizeof(inst->variables_name)/sizeof(char*); i++)
+        if (inst->variables_name[i]) free(inst->variables_name[i]);
+    free(inst->variables_name);
+    for (int i=0; i<sizeof(inst->variables_ptr)/sizeof(void*); i++)
+        if (inst->variables_ptr[i]) free(inst->variables_ptr[i]);
+    free(inst->variables_ptr);
+    free(inst);
+}
+
 void trigger_instances()
 {
     for (int i=0; i<sizeof(current_room->instances)/sizeof(__gmklib__instance*); i++)
@@ -585,6 +626,43 @@ void trigger_instances()
             __gmklib__object* obj= current_room->instances[i]->object;
             if ((*obj->onCreate)) (*obj->onCreate)(current_room->instances[i]);
         }
+}
+
+#define add_variable(name, type) \
+    instance_add_variable_manual(self, name, sizeof(type))
+
+#define instance_add_variable(inst, varname, type) \
+    instance_add_variable_manual(inst, varname, sizeof(type))
+
+void* instance_add_variable_manual(__gmklib__instance* inst, const char* varname, int typesize)
+{
+    for (int i=0; i<sizeof(inst->variables_ptr)/sizeof(void*); i++)
+    {
+        if (!inst->variables_ptr[i]||!inst->variables_name[i])
+        {
+            inst->variables_name[i]= (char*)malloc(strlen(varname)*sizeof(char)+8);
+            strcpy(inst->variables_name[i],varname);
+            inst->variables_ptr[i]= malloc(typesize+8);
+            return inst->variables_ptr[i];
+        }
+    }
+    return NULL;
+}
+
+#define get_variable(name) \
+    instance_get_variable(self, name)
+
+void* instance_get_variable(__gmklib__instance* inst, const char* varname)
+{
+    for (int i=0; i<sizeof(inst->variables_ptr)/sizeof(void*); i++)
+    {
+        if (inst->variables_name[i])
+        {
+            if (!strcmp(inst->variables_name[i],varname))
+                return inst->variables_ptr[i];
+        }
+    }
+    return NULL;
 }
 
 void room_goto(__gmklib__room* room)
@@ -607,8 +685,12 @@ void draw_current_room()
         __gmklib__instance* inst= current_room->instances[i];
 
         if (*inst->object->onBeginFrame) (*inst->object->onBeginFrame)(inst);
+        if (!current_room->instances[i]) continue; //In case the instance gets destroyed
 
-        if (!(*inst->object->onDraw)) draw_sprite(inst->object->sprite, 0, inst->x, inst->y);
-        else  (*inst->object->onDraw)(inst);
+        if (inst->object->visible)
+        {
+            if (!(*inst->object->onDraw)) draw_sprite(inst->object->sprite, 0, inst->x, inst->y);
+            else  (*inst->object->onDraw)(inst);
+        }
     }
 }
