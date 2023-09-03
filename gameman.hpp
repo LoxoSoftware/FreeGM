@@ -308,7 +308,7 @@ int game_compile()
         data+="\nstatic struct {\n\tstruct __gmklib__sprite_s* sprite;\n\tbool visible;\n";
         for (int ii=0; ii<events.count(); ii++)
             data+="\tvoid (*"+events[ii]+")(__gmklib__instance*);\n";
-        data+="} "+obj->name+"_s = {\n\t&"+obj->image->name+","+
+        data+="} "+obj->name+"_s = {\n\t"+(obj->image?"&"+obj->image->name:"NULL")+","+
                 (obj->visible?QString("true"):QString("false"))+",\n";
         f_oout.write(data.toLocal8Bit().data());
         data= "";
@@ -360,8 +360,8 @@ int game_compile()
         for (int i=0; i<room->instances.count(); i++)
         {
             data+="&"+room->instances[i].object->name+","+QString::number(room->instances[i].x)+
-                    ","+QString::number(room->instances[i].y)+",";
-            if (i%8 == 7) data+= "\n\t";
+                    ","+QString::number(room->instances[i].y)+",NULL,NULL, ";
+            if (i%2==1) data+= "\n\t";
         }
         data+="\n};";
         f_rout.write(data.toLocal8Bit().data());
