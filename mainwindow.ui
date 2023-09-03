@@ -60,14 +60,14 @@ border-right-color: rgb(127,127,127);
 border-bottom-color: white;
 border-left-color: white;
 }
-QGroupBox, QTabWidget, QGraphicsView {
+QGroupBox, QTabWidget, QGraphicsView, QTableWidget {
 border: 2px solid;
 border-top-color: rgb(127,127,127);
 border-right-color: rgb(127,127,127);
 border-bottom-color: white;
 border-left-color: white;
 }
-QPushButton, QComboBox, /*QScrollBar::handle,*/
+QPushButton, QComboBox,
 QHeaderView::section {
 border: 2px solid;
 border-top-color: white;
