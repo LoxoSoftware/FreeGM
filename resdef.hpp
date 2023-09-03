@@ -57,6 +57,8 @@ public:
     bool visible;
     QList<QListWidgetItem> events;
     QList<QString> event_code;
+    QList<QString> variables;
+    QList<QString> variables_val;
     GMObject(QTreeWidgetItem* tree_item)
     {
         name= tree_item->text(0);
@@ -118,6 +120,15 @@ public:
     GMObject* selected_object;
     QList<GMInstance> instances;
     GMRoomSettings() {}
+};
+
+class GMObjectVars //Custom variables def. transport class
+{
+public:
+    GMObject* target_object;
+    QList<QString> variables;
+    QList<QString> variables_val;
+    GMObjectVars() {}
 };
 
 #endif // RESDEF_H
