@@ -121,6 +121,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="btnVariables">
+        <property name="text">
+         <string>Variables</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </widget>
@@ -160,12 +167,29 @@
       <rect>
        <x>10</x>
        <y>400</y>
-       <width>171</width>
+       <width>111</width>
        <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>Add trigger</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnRemEvent">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>400</y>
+       <width>51</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/icons/cancel</normaloff>:/icons/cancel</iconset>
      </property>
     </widget>
    </widget>
@@ -196,6 +220,9 @@
        <pointsize>11</pointsize>
       </font>
      </property>
+     <property name="tabStopDistance">
+      <double>20.000000000000000</double>
+     </property>
      <property name="placeholderText">
       <string>Write C++ code here</string>
      </property>
@@ -210,7 +237,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>External editor...</string>
+      <string>External editor</string>
      </property>
     </widget>
    </widget>
