@@ -59,6 +59,7 @@ public:
     QList<QString> event_code;
     QList<QString> variables;
     QList<QString> variables_val;
+    QList<QString> variables_type;
     GMObject(QTreeWidgetItem* tree_item)
     {
         name= tree_item->text(0);
@@ -128,6 +129,7 @@ public:
     GMObject* target_object;
     QList<QString> variables;
     QList<QString> variables_val;
+    QList<QString> variables_type;
     GMObjectVars() {}
 };
 
