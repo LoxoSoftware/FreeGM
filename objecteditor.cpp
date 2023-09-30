@@ -51,8 +51,10 @@ ObjectEditor::ObjectEditor(GMObject* object, QWidget *parent) :
         ui->lstEvents->addItem(&this->events.last());
     }
     transport.variables.clear();
+    transport.variables_type.clear();
     transport.variables_val.clear();
     transport.variables.append(object->variables);
+    transport.variables_type.append(object->variables_type);
     transport.variables_val.append(object->variables_val);
 
     //Disable the code editor (until a trigger is selected)
@@ -88,8 +90,10 @@ void ObjectEditor::on_btnOk_clicked()
         object->event_code += this->event_code[i];
     }
     object->variables.clear();
+    object->variables_type.clear();
     object->variables_val.clear();
     object->variables.append(transport.variables);
+    object->variables_type.append(transport.variables_type);
     object->variables_val.append(transport.variables_val);
     std::cout << "Saved object details!" << std::endl;
     object->update();
