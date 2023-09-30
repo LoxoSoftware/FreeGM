@@ -37,6 +37,16 @@ private slots:
 
     void on_btnRoomOrder_clicked();
 
+    void on_actionSave_projecacy_t_leg_triggered();
+
+    void on_actionLoad_triggered();
+
+    void on_actionSave_project_triggered();
+
+    void on_actionSave_project_as_triggered();
+
+    void on_actionSave_project_legacy_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

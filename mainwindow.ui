@@ -609,6 +609,11 @@ background-color: rgb(0,0,127);
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionLoad"/>
+    <addaction name="actionSave_project"/>
+    <addaction name="actionSave_project_as"/>
+    <addaction name="actionSave_project_legacy"/>
+    <addaction name="actionSave_projecacy_t_leg"/>
    </widget>
    <widget class="QMenu" name="menuPanels">
     <property name="title">
@@ -693,6 +698,39 @@ background-color: rgb(0,0,127);
   <action name="actionDisable_theme">
    <property name="text">
     <string>Toggle custom theme</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/document_open</normaloff>:/icons/document_open</iconset>
+   </property>
+   <property name="text">
+    <string>Load project</string>
+   </property>
+  </action>
+  <action name="actionSave_project">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/document_save</normaloff>:/icons/document_save</iconset>
+   </property>
+   <property name="text">
+    <string>Save project</string>
+   </property>
+  </action>
+  <action name="actionSave_project_legacy">
+   <property name="text">
+    <string>Load project (legacy)</string>
+   </property>
+  </action>
+  <action name="actionSave_projecacy_t_leg">
+   <property name="text">
+    <string>Save project (legacy)</string>
+   </property>
+  </action>
+  <action name="actionSave_project_as">
+   <property name="text">
+    <string>Save project as...</string>
    </property>
   </action>
  </widget>

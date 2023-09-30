@@ -153,7 +153,6 @@ void MainWindow::on_actionDisable_theme_triggered()
         this->setStyleSheet((this->styleSheet()).insert(0,"/*"));
 }
 
-
 void MainWindow::on_actionDelete_triggered()
 {
     //Delete a resource
@@ -179,7 +178,6 @@ void MainWindow::on_actionDelete_triggered()
     }
 }
 
-
 void MainWindow::on_btnRoomOrder_clicked()
 {
     RoomOrderer* ro= new RoomOrderer(folder_rooms, this);
@@ -187,3 +185,39 @@ void MainWindow::on_btnRoomOrder_clicked()
     ro->show();
 }
 
+void MainWindow::on_actionSave_project_legacy_triggered()
+{
+    game_load_legacy();
+}
+
+void MainWindow::on_actionSave_projecacy_t_leg_triggered()
+{
+    game_save_legacy();
+}
+
+void MainWindow::on_actionLoad_triggered()
+{
+    game_load();
+}
+
+void MainWindow::on_actionSave_project_triggered()
+{
+    game_save();
+}
+
+void MainWindow::on_actionSave_project_as_triggered()
+{
+    QFileDialog idial= QFileDialog();
+    idial.setFileMode(QFileDialog::Directory);
+    QString newpath= idial.getExistingDirectory(mainwindow, "Choose a folder to save your project in");
+    if (newpath == "") return;
+    QInputDialog sdial= QInputDialog();
+    QString newname= sdial.getText(mainwindow, "Create a new project", "Choose a name for your project");
+    if (newname == "") return;
+
+    gamename= newname;
+    gamepath= newpath+"/"+newname+"/";
+    mainwindow->setWindowTitle(gamename+" - FreeGM");
+
+    game_save();
+}
