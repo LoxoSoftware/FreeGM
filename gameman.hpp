@@ -11,9 +11,14 @@
 #include <QIODevice>
 #include <QProcess>
 #include <QThread>
+#include <iostream>
 
 #include "resman.hpp"
 #include "compiledialog.h"
+
+#include "lib/tinyxml2.h"
+
+using namespace tinyxml2;
 
 extern QTreeWidgetItem* folder_sprites;
 extern QTreeWidgetItem* folder_objects;
@@ -22,6 +27,193 @@ extern QTreeWidgetItem* folder_constants;
 extern QWidget* mainwindow;
 
 int game_save()
+{
+    //Returns 0 on success
+
+    if (newgame)
+    {
+        QFileDialog idial= QFileDialog();
+        idial.setFileMode(QFileDialog::Directory);
+        QString newpath= idial.getExistingDirectory(mainwindow, "Choose a folder to save your project in");
+        if (newpath == "") return 1;
+        QInputDialog sdial= QInputDialog();
+        QString newname= sdial.getText(mainwindow, "Create a new project", "Choose a name for your project");
+        if (newname == "") return 2;
+
+        gamename= newname;
+        gamepath= newpath+"/"+newname+"/";
+        mainwindow->setWindowTitle(gamename+" - FreeGM");
+    }
+
+    QDir().mkpath(gamepath+"sprites/");
+    QDir().mkpath(gamepath+"objects/");
+    QDir().mkpath(gamepath+"rooms/");
+    QDir().mkpath(gamepath+"constants/");
+
+    QFile f_gamedata= QFile(gamepath+gamename+".fgm");
+    f_gamedata.open(QIODevice::WriteOnly);
+    f_gamedata.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    f_gamedata.write("WARNING! Do not distribute this file alone\n");
+    //Save resource tree
+    f_gamedata.write("<resources>\n");
+    f_gamedata.write("<sprites count=\"");
+    f_gamedata.write((std::to_string(folder_sprites->childCount())).data());
+    f_gamedata.write("\">\n");
+    for (int i=0; i<folder_sprites->childCount(); i++)
+    {
+        f_gamedata.write("<res>");
+        f_gamedata.write(folder_sprites->child(i)->text(0).toLocal8Bit().data());
+        f_gamedata.write("</res>\n");
+    }
+    f_gamedata.write("</sprites>\n");
+    f_gamedata.write("<objects count=\"");
+    f_gamedata.write((std::to_string(folder_objects->childCount())).data());
+    f_gamedata.write("\">\n");
+    for (int i=0; i<folder_objects->childCount(); i++)
+    {
+        f_gamedata.write("<res>");
+        f_gamedata.write(folder_objects->child(i)->text(0).toLocal8Bit().data());
+        f_gamedata.write("</res>\n");
+    }
+    f_gamedata.write("</objects>\n");
+    f_gamedata.write("<rooms count=\"");
+    f_gamedata.write((std::to_string(folder_rooms->childCount())).data());
+    f_gamedata.write("\">\n");
+    for (int i=0; i<folder_rooms->childCount(); i++)
+    {
+        f_gamedata.write("<res>");
+        f_gamedata.write(folder_rooms->child(i)->text(0).toLocal8Bit().data());
+        f_gamedata.write("</res>\n");
+    }
+    f_gamedata.write("</rooms>\n");
+    f_gamedata.write("<constants count=\"");
+    f_gamedata.write((std::to_string(folder_constants->childCount())).data());
+    f_gamedata.write("\">\n");
+    for (int i=0; i<folder_constants->childCount(); i++)
+    {
+        f_gamedata.write("<res>");
+        f_gamedata.write(folder_constants->child(i)->text(0).toLocal8Bit().data());
+        f_gamedata.write("</res>\n");
+    }
+    f_gamedata.write("</constants>\n");
+    f_gamedata.write("</resources>");
+
+    QFile* f= new QFile();
+
+    //Save sprites
+    for (int i=0; i<folder_sprites->childCount(); i++)
+    {
+        GMSprite* spr= ((GMSprite*)resource_find(folder_sprites->child(i)));
+        spr->image.save(gamepath+"/sprites/"+spr->name+".png");
+        f->setFileName(gamepath+"/sprites/"+spr->name);
+        f->open(QIODevice::WriteOnly);
+        f->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<properties>\n");
+        QString data= "<index>"+QString::number(spr->getFolderIndex())+"</index>\n"+
+                      "<animated>"+(spr->animated?"true":"false")+"</animated>\n"+
+                      "<frames>"+QString::number(spr->frames)+"</frames>\n";
+        f->write(data.toLocal8Bit().data());
+        f->write("</properties>");
+        f->close();
+    }
+    //Save objects
+    for (int i=0; i<folder_objects->childCount(); i++)
+    {
+        GMObject* obj= ((GMObject*)resource_find(folder_objects->child(i)));
+        f->setFileName(gamepath+"/objects/"+obj->name);
+        f->open(QIODevice::WriteOnly);
+        f->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<properties>\n");
+        QString data= "<index>"+QString::number(obj->getFolderIndex())+"</index>\n"+
+                      "<image>"+(obj->image?obj->image->name:"")+"</image>\n"+
+                      "<visible>"+(obj->visible?"true":"false")+"</visible>\n";
+        f->write(data.toLocal8Bit().data());
+        f->write("</properties>\n<events count=\"");
+        f->write(QString::number(obj->events.count()).toLocal8Bit().data());
+        f->write("\">\n");
+        //For every event...
+        for (int ii=0; ii<obj->events.count(); ii++)
+        {
+            f->write("<event trigger=\"");
+            f->write(obj->events[ii].text().toLocal8Bit().data());
+            f->write("\">");
+            data= "";
+            for (int c=0; c<obj->event_code[ii].count(); c++)
+            {
+                switch (obj->event_code[ii][c].unicode())
+                {
+                case '<':
+                    data+="&lt;";
+                    break;
+                case '>':
+                    data+="&gt;";
+                    break;
+                case '&':
+                    data+="&amp;";
+                    break;
+                default:
+                    data+=obj->event_code[ii][c];
+                    break;
+                }
+            }
+            f->write(data.toLocal8Bit().data());
+            f->write("</event>\n");
+        }
+        f->write("</events>\n");
+        f->close();
+    }
+    //Save rooms
+    for (int i=0; i<folder_rooms->childCount(); i++)
+    {
+        GMRoom* room= ((GMRoom*)resource_find(folder_rooms->child(i)));
+        f->setFileName(gamepath+"/rooms/"+room->name);
+        f->open(QIODevice::WriteOnly);
+        f->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<properties>\n");
+        QString data= "<index>"+QString::number(room->getFolderIndex())+"</index>\n"+
+                      "<width>"+QString::number(room->room_width)+"</width>\n"+
+                      "<height>"+QString::number(room->room_height)+"</height>\n"+
+                      "<snap_width>"+QString::number(room->room_snapX)+"</snap_width>\n"+
+                      "<snap_height>"+QString::number(room->room_snapY)+"</snap_height>\n"+
+                      "<back_color>"+room->back_color.name()+"</back_color>\n"+
+                      "<fill_back>"+(room->fill_back?"true":"false")+"</fill_back>\n";
+        f->write(data.toLocal8Bit().data());
+        f->write("</properties>\n<instances count=\"");
+        f->write(QString::number(room->instances.count()).toLocal8Bit().data());
+        f->write("\">\n");
+        //For every instance...
+        for (int ii=0; ii<room->instances.count(); ii++)
+        {
+            f->write("<instance>\n<object>");
+            f->write(room->instances[ii].object->name.toLocal8Bit().data());
+            f->write("</object>\n<x>");
+            f->write((std::to_string(room->instances[ii].x)).c_str());
+            f->write("</x>\n<y>");
+            f->write((std::to_string(room->instances[ii].y)).c_str());;
+            f->write("</y>\n</instance>\n");
+        }
+        f->write("</instances>\n");
+        f->close();
+    }
+    //Save constants
+    for (int i=0; i<folder_constants->childCount(); i++)
+    {
+        GMConstant* cc= ((GMConstant*)resource_find(folder_constants->child(i)));
+        f->setFileName(gamepath+"/constants/"+cc->name);
+        f->open(QIODevice::WriteOnly);
+        f->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<properties>\n");
+        QString data= "<index>"+QString::number(cc->getFolderIndex())+"</index>\n"+
+                      "<value>"+cc->value+"</value>\n";
+        f->write(data.toLocal8Bit().data());
+        f->write("</properties>");
+        f->close();
+    }
+
+    newgame= false;
+
+    f->close();
+    f_gamedata.close();
+    return 0;
+}
+
+int game_save_legacy()
 {
     //Returns 0 on success
 
@@ -178,6 +370,49 @@ int game_load()
     folder_constants->takeChildren();
     resources.clear();
 
+    XMLDocument f_gamedata;
+    XMLError eResult = f_gamedata.LoadFile(s_f_gamedata.toLocal8Bit().data());
+
+    XMLElement* pElement = f_gamedata.FirstChildElement("resources")->FirstChildElement("sprites");
+    for (XMLElement* pEChild = pElement->FirstChildElement("res"); pEChild; pEChild= pEChild->NextSiblingElement("res"))
+        resources_loaditem(pEChild->GetText(), folder_sprites);
+    pElement = f_gamedata.FirstChildElement("resources")->FirstChildElement("objects");
+    for (XMLElement* pEChild = pElement->FirstChildElement("res"); pEChild; pEChild= pEChild->NextSiblingElement("res"))
+        resources_loaditem(pEChild->GetText(), folder_objects);
+    pElement = f_gamedata.FirstChildElement("resources")->FirstChildElement("rooms");
+    for (XMLElement* pEChild = pElement->FirstChildElement("res"); pEChild; pEChild= pEChild->NextSiblingElement("res"))
+        resources_loaditem(pEChild->GetText(), folder_rooms);
+    pElement = f_gamedata.FirstChildElement("resources")->FirstChildElement("constants");
+    for (XMLElement* pEChild = pElement->FirstChildElement("res"); pEChild; pEChild= pEChild->NextSiblingElement("res"))
+        resources_loaditem(pEChild->GetText(), folder_constants);
+
+    gamename.chop(gamename.count()-gamename.lastIndexOf(".fgm"));
+    mainwindow->setWindowTitle(gamename+" - FreeGM");
+
+    return 0;
+}
+
+int game_load_legacy()
+{
+    //Returns 0 on success
+
+    QFileDialog idial= QFileDialog();
+    QString s_f_gamedata= idial.getOpenFileName(mainwindow, "Open a project file", ".", "FreeGM project file (*.fgm)");
+
+    if (s_f_gamedata == "")
+        return 1;
+
+    gamepath= QFileInfo(s_f_gamedata).absolutePath()+"/";
+    gamename= QFileInfo(s_f_gamedata).fileName();
+    newgame= false;
+
+    //Clear resource tree
+    folder_sprites->takeChildren();
+    folder_objects->takeChildren();
+    folder_rooms->takeChildren();
+    folder_constants->takeChildren();
+    resources.clear();
+
     QFile f_gamedata= QFile(s_f_gamedata);
     f_gamedata.open(QIODevice::ReadOnly);
     /*Discard warning text*/ f_gamedata.readLine();
@@ -186,16 +421,16 @@ int game_load()
     //      it will be removed in resources_loaditem()
     int nres= strtol(f_gamedata.readLine(),nullptr,10);
     for (int i=0; i<nres; i++)
-        resources_loaditem(f_gamedata.readLine(),folder_sprites);
+        resources_loaditem_legacy(f_gamedata.readLine(),folder_sprites);
     nres= strtol(f_gamedata.readLine(),nullptr,10);
     for (int i=0; i<nres; i++)
-        resources_loaditem(f_gamedata.readLine(),folder_objects);
+        resources_loaditem_legacy(f_gamedata.readLine(),folder_objects);
     nres= strtol(f_gamedata.readLine(),nullptr,10);
     for (int i=0; i<nres; i++)
-        resources_loaditem(f_gamedata.readLine(),folder_rooms);
+        resources_loaditem_legacy(f_gamedata.readLine(),folder_rooms);
     nres= strtol(f_gamedata.readLine(),nullptr,10);
     for (int i=0; i<nres; i++)
-        resources_loaditem(f_gamedata.readLine(),folder_constants);
+        resources_loaditem_legacy(f_gamedata.readLine(),folder_constants);
 
     gamename.chop(gamename.count()-gamename.lastIndexOf(".fgm"));
     mainwindow->setWindowTitle(gamename+" - FreeGM");
@@ -302,9 +537,23 @@ int game_compile()
         QFile f_oout= QFile(gamepath+"build/objects/"+obj->name+".h");
         cdial->console_write("  writing "+item->text(0)+".h ...");
         f_oout.open(QIODevice::WriteOnly);
+        QString vardef_data= "";
+        for (int ii=0; ii<obj->variables.count(); ii++)
+            vardef_data+="\t"+obj->variables_type[ii]+"* "+obj->variables[ii]+"_ptr= ("
+                    +obj->variables_type[ii]+"*)instance_add_variable(self, \""
+                    +obj->variables[ii]+"\", "+obj->variables_type[ii]+");\n";
+        for (int ii=0; ii<obj->variables.count(); ii++)
+            vardef_data+="\t"+obj->variables_type[ii]+" "+obj->variables[ii]+"= "
+                    +"*"+obj->variables[ii]+"_ptr;\n";
         QString data= "__gmklib__object "+obj->name+";";
+        bool new_onCreate=true; //onCreate event is not present, need to make a new one
         for (int ii=0; ii<obj->events.count(); ii++)
+        {
             data+="\nvoid __"+obj->name+"__"+obj->events[ii].text()+"(__gmklib__instance* self);";
+            if (obj->events[ii].text() == events[0]) new_onCreate= false;
+        }
+        if (new_onCreate)
+            data+="\nvoid __"+obj->name+"__"+events[0]+"(__gmklib__instance* self);";
         data+="\nstatic struct {\n\tstruct __gmklib__sprite_s* sprite;\n\tbool visible;\n";
         for (int ii=0; ii<events.count(); ii++)
             data+="\tvoid (*"+events[ii]+")(__gmklib__instance*);\n";
@@ -321,18 +570,27 @@ int game_compile()
             {
                 if (obj->events[iii].text() == events[ii])
                 {
-                    data+= "\t&__"+obj->name+"__"+obj->events[iii].text()+",\n";
+                    data+= "\t&__"+obj->name+"__"+events[ii]+",\n";
                     found=true;
                 }
             }
+            if (new_onCreate && ii==0)
+                data+= "\t&__"+obj->name+"__"+events[0]+",\n";
+            else
             if (!found) data+= "\tNULL,\n";
         }
         data+= "};\n";
         f_oout.write(data.toLocal8Bit().data());
+        if (new_onCreate)
+        {
+            data="\nvoid __"+obj->name+"__"+events[0]+"(__gmklib__instance* self)\n{\n\t"+
+                    "//NOTE: Empty event\n"+vardef_data+"\n}\n";
+            f_oout.write(data.toLocal8Bit().data());
+        }
         for (int ii=0; ii<obj->events.count(); ii++)
         {
-            data="\nvoid __"+obj->name+"__"+obj->events[ii].text()+"(__gmklib__instance* self)\n{\n\t"+
-                    obj->event_code[ii]+"\n}\n";
+            data="\nvoid __"+obj->name+"__"+obj->events[ii].text()+"(__gmklib__instance* self)\n{\n"+
+                    (obj->events[ii].text()==events[0]?QString(vardef_data+"\n\n"):QString(""))+obj->event_code[ii]+"\n}\n";
             f_oout.write(data.toLocal8Bit().data());
         }
 

@@ -26,6 +26,7 @@ set(PROJECT_SOURCES
         roomorderer.h roomorderer.cpp roomorderer.ui
         vardefiner.h vardefiner.cpp vardefiner.ui
         resources.qrc
+        lib/tinyxml2.h lib/tinyxml2.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

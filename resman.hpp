@@ -12,6 +12,9 @@
 
 #include "resdef.hpp"
 
+#include "lib/tinyxml2.h"
+using namespace tinyxml2;
+
 QString gamepath = "<null path>";
 QString gamename = "<new game>";
 bool newgame = true;
@@ -97,6 +100,89 @@ QTreeWidgetItem* resources_newitem(QString default_name, QTreeWidgetItem* folder
 }
 
 QTreeWidgetItem* resources_loaditem(QString name, QTreeWidgetItem* folder)
+{
+    QTreeWidgetItem* newitem = new QTreeWidgetItem();
+
+    //Create an entry in the resource tree
+    newitem->setText(0, name);
+    folder->addChild(newitem);
+
+    //Create an object based on that entry and load the data
+    GMResource* newres= nullptr;
+    if (folder == folder_sprites)
+    {
+        newres = new GMSprite(newitem);
+        XMLDocument f; f.LoadFile(QString(gamepath+"sprites/"+name).toLocal8Bit().data());
+        XMLElement* froot= f.FirstChildElement("properties");
+        ((GMSprite*)newres)->name= name;
+        ((GMSprite*)newres)->image.load(gamepath+"sprites/"+name+".png");
+        ((GMSprite*)newres)->icon= QIcon(QPixmap::fromImage(((GMSprite*)newres)->image));
+        froot->FirstChildElement("animated")->QueryBoolText(&(((GMSprite*)newres)->animated));
+        froot->FirstChildElement("frames")->QueryIntText(&(((GMSprite*)newres)->frames));
+    }
+    else
+    if (folder == folder_objects)
+    {
+        newres = new GMObject(newitem);
+        XMLDocument f; f.LoadFile(QString(gamepath+"objects/"+name).toLocal8Bit().data());
+        XMLElement* froot= f.FirstChildElement("properties");
+        ((GMObject*)newres)->name= name;
+        ((GMObject*)newres)->image= ((GMSprite*)resource_find(froot->FirstChildElement("image")->GetText()));
+        froot->FirstChildElement("visible")->QueryBoolText(&(((GMObject*)newres)->visible));
+        froot= f.FirstChildElement("events");
+        for (XMLElement* tnode= froot->FirstChildElement("event"); tnode; tnode= tnode->NextSiblingElement("event"))
+        {
+            const char* mstr; tnode->QueryStringAttribute("trigger", &mstr);
+            QIcon tico= QIcon(QFile::exists(":/icons/event_"+QString(mstr))?":/icons/event_"+QString(mstr):":icons/question");
+            ((GMObject*)newres)->events+=QListWidgetItem(tico,mstr);
+            ((GMObject*)newres)->event_code+=tnode->GetText();
+        }
+    }
+    else
+    if (folder == folder_rooms)
+    {
+        newres = new GMRoom(newitem);
+        XMLDocument f; f.LoadFile(QString(gamepath+"rooms/"+name).toLocal8Bit().data());
+        XMLElement* froot= f.FirstChildElement("properties");
+        ((GMRoom*)newres)->name= name;
+        froot->FirstChildElement("width")->QueryIntText(&(((GMRoom*)newres)->room_width));
+        froot->FirstChildElement("height")->QueryIntText(&(((GMRoom*)newres)->room_height));
+        froot->FirstChildElement("snap_width")->QueryIntText(&(((GMRoom*)newres)->room_snapX));
+        froot->FirstChildElement("snap_height")->QueryIntText(&(((GMRoom*)newres)->room_snapY));
+        ((GMRoom*)newres)->back_color= QColor(froot->FirstChildElement("back_color")->GetText());
+        froot->FirstChildElement("fill_back")->QueryBoolText(&(((GMRoom*)newres)->fill_back));
+        froot= f.FirstChildElement("instances");
+        for (XMLElement* tnode= froot->FirstChildElement("instance"); tnode; tnode= tnode->NextSiblingElement("instance"))
+        {
+            GMInstance inst= GMInstance();
+            const char* mstr= tnode->FirstChildElement("object")->GetText();
+            inst.object= ((GMObject*)resource_find(QString(mstr)));
+            tnode->FirstChildElement("x")->QueryIntText(&inst.x);
+            tnode->FirstChildElement("y")->QueryIntText(&inst.y);
+            ((GMRoom*)newres)->instances+=inst;
+        }
+    }
+    else
+    if (folder == folder_constants)
+    {
+        newres = new GMConstant(newitem);
+        XMLDocument f; f.LoadFile(QString(gamepath+"rooms/"+name).toLocal8Bit().data());
+        XMLElement* froot= f.FirstChildElement("properties");
+        ((GMConstant*)newres)->name= name;
+        ((GMConstant*)newres)->value= QString(froot->FirstChildElement("value")->GetText());
+    }
+    else
+    return nullptr;
+    resources += newres;
+
+    //QTreeWidgetItem* folder = ui->trwResources->findItems(QString::fromStdString("Rooms"),Qt::MatchFlags())[0];
+
+    folder->treeWidget()->expandItem(folder);
+
+    return newitem;
+}
+
+QTreeWidgetItem* resources_loaditem_legacy(QString name, QTreeWidgetItem* folder)
 {
     QTreeWidgetItem* newitem = new QTreeWidgetItem();
 
