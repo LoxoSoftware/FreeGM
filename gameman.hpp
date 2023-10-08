@@ -126,7 +126,16 @@ int game_save()
                       "<image>"+(obj->image?obj->image->name:"")+"</image>\n"+
                       "<visible>"+(obj->visible?"true":"false")+"</visible>\n";
         f->write(data.toLocal8Bit().data());
-        f->write("</properties>\n<events count=\"");
+        f->write("</properties>\n<variables count=\"");
+        f->write(QString::number(obj->variables.count()).toLocal8Bit().data());
+        f->write("\">\n");
+        for (int ii=0; ii<obj->variables.count(); ii++)
+        {
+            data= "<variable type=\""+obj->variables_type[ii]+"\" name=\""+
+                    obj->variables[ii]+"\">"+obj->variables_val[ii]+"</variable>\n";
+            f->write(data.toLocal8Bit().data());
+        }
+        f->write("</variables>\n<events count=\"");
         f->write(QString::number(obj->events.count()).toLocal8Bit().data());
         f->write("\">\n");
         //For every event...
@@ -538,13 +547,8 @@ int game_compile()
         cdial->console_write("  writing "+item->text(0)+".h ...");
         f_oout.open(QIODevice::WriteOnly);
         QString vardef_data= "";
-        for (int ii=0; ii<obj->variables.count(); ii++)
-            vardef_data+="\t"+obj->variables_type[ii]+"* "+obj->variables[ii]+"_ptr= ("
-                    +obj->variables_type[ii]+"*)instance_add_variable(self, \""
-                    +obj->variables[ii]+"\", "+obj->variables_type[ii]+");\n";
-        for (int ii=0; ii<obj->variables.count(); ii++)
-            vardef_data+="\t"+obj->variables_type[ii]+" "+obj->variables[ii]+"= "
-                    +"*"+obj->variables[ii]+"_ptr;\n";
+        QString varget_data= "";
+        QString varend_data= "";
         QString data= "__gmklib__object "+obj->name+";";
         bool new_onCreate=true; //onCreate event is not present, need to make a new one
         for (int ii=0; ii<obj->events.count(); ii++)
@@ -561,6 +565,21 @@ int game_compile()
                 (obj->visible?QString("true"):QString("false"))+",\n";
         f_oout.write(data.toLocal8Bit().data());
         data= "";
+        for (int ii=0; ii<obj->variables.count(); ii++)
+            vardef_data+="\t"+obj->variables_type[ii]+"* "+obj->variables[ii]+"_ptr= ("
+                    +obj->variables_type[ii]+"*)instance_add_variable(self, \""
+                    +obj->variables[ii]+"\", "+obj->variables_type[ii]+");\n";
+        if (!new_onCreate)
+        for (int ii=0; ii<obj->variables.count(); ii++)
+            vardef_data+="\t"+obj->variables_type[ii]+" "+obj->variables[ii]+"= "
+                    +"*"+obj->variables[ii]+"_ptr;\n";
+        for (int ii=0; ii<obj->variables.count(); ii++)
+            varget_data+="\t"+obj->variables_type[ii]+"* "+obj->variables[ii]+"_ptr= ("
+                    +obj->variables_type[ii]+"*)instance_get_variable(self, \""
+                    +obj->variables[ii]+"\");\n\t"+obj->variables_type[ii]+" "+obj->variables[ii]
+                    +"= *"+obj->variables[ii]+"_ptr;\n";
+        for (int ii=0; ii<obj->variables.count(); ii++)
+            varend_data+="\t*"+obj->variables[ii]+"_ptr="+obj->variables[ii]+";\n";
         for (int ii=0; ii<events.count(); ii++)
         {
             //Find if the object has the trigger defined,
@@ -590,7 +609,8 @@ int game_compile()
         for (int ii=0; ii<obj->events.count(); ii++)
         {
             data="\nvoid __"+obj->name+"__"+obj->events[ii].text()+"(__gmklib__instance* self)\n{\n"+
-                    (obj->events[ii].text()==events[0]?QString(vardef_data+"\n\n"):QString(""))+obj->event_code[ii]+"\n}\n";
+                    (obj->events[ii].text()==events[0]?QString(vardef_data+""):QString(varget_data+"\n"))+obj->event_code[ii]+"\n\n"
+                    +varend_data+"}\n";
             f_oout.write(data.toLocal8Bit().data());
         }
 

@@ -129,10 +129,19 @@ QTreeWidgetItem* resources_loaditem(QString name, QTreeWidgetItem* folder)
         ((GMObject*)newres)->name= name;
         ((GMObject*)newres)->image= ((GMSprite*)resource_find(froot->FirstChildElement("image")->GetText()));
         froot->FirstChildElement("visible")->QueryBoolText(&(((GMObject*)newres)->visible));
+        froot= f.FirstChildElement("variables");
+        for (XMLElement* tnode= froot->FirstChildElement("variable"); tnode; tnode= tnode->NextSiblingElement("variable"))
+        {
+            const char* mstr=NULL; tnode->QueryStringAttribute("name", &mstr);
+            ((GMObject*)newres)->variables+=QString(mstr);
+            tnode->QueryStringAttribute("type", &mstr);
+            ((GMObject*)newres)->variables_type+=QString(mstr);
+            ((GMObject*)newres)->variables_val+=tnode->GetText();
+        }
         froot= f.FirstChildElement("events");
         for (XMLElement* tnode= froot->FirstChildElement("event"); tnode; tnode= tnode->NextSiblingElement("event"))
         {
-            const char* mstr; tnode->QueryStringAttribute("trigger", &mstr);
+            const char* mstr=NULL; tnode->QueryStringAttribute("trigger", &mstr);
             QIcon tico= QIcon(QFile::exists(":/icons/event_"+QString(mstr))?":/icons/event_"+QString(mstr):":icons/question");
             ((GMObject*)newres)->events+=QListWidgetItem(tico,mstr);
             ((GMObject*)newres)->event_code+=tnode->GetText();
