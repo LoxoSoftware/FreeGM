@@ -82,6 +82,7 @@ int fps = 0;
 
 u16 alarm[16];
 const u8 *keys;
+int mouse_x, mouse_y;
 
 u8 __gmklib__dcol_r= 255;
 u8 __gmklib__dcol_g= 255;
@@ -89,8 +90,6 @@ u8 __gmklib__dcol_b= 255;
 u8 __gmklib__dcol_a= 255;
 
 SDL_BlendMode __gmklib__blendmode= SDL_BLENDMODE_BLEND;
-
-int mouse_x, mouse_y;
 
 ///// Color definitions (macro) /////
 
@@ -405,7 +404,7 @@ void draw_sprite_manual(__gmklib__sprite* spr, int left, int top, int w, int h, 
 
 void keyboard_poll()
 {
-     keys= SDL_GetKeyboardState(NULL);
+    keys= SDL_GetKeyboardState(NULL);
 }
 
 u8 keyboard_check(int key)
@@ -458,6 +457,20 @@ void screen_wait_vsync()
 int event_poll()
 {
     __gmklib__event_queue= SDL_PollEvent(&__gmklib__window_event);
+    if (__gmklib__event_queue > 0)
+    switch(__gmklib__window_event.type)
+    {
+        case SDL_MOUSEMOTION:
+        {
+            while (__gmklib__window_event.type == SDL_MOUSEMOTION)
+            {
+                mouse_x= __gmklib__window_event.motion.x;
+                mouse_y= __gmklib__window_event.motion.y;
+                __gmklib__event_queue= SDL_PollEvent(&__gmklib__window_event);
+            }
+            break;
+        }
+    }
 
     return __gmklib__event_queue;
 }
