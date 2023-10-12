@@ -130,6 +130,7 @@ QTreeWidgetItem* resources_loaditem(QString name, QTreeWidgetItem* folder)
         ((GMObject*)newres)->image= ((GMSprite*)resource_find(froot->FirstChildElement("image")->GetText()));
         froot->FirstChildElement("visible")->QueryBoolText(&(((GMObject*)newres)->visible));
         froot= f.FirstChildElement("variables");
+        if (froot != nullptr)
         for (XMLElement* tnode= froot->FirstChildElement("variable"); tnode; tnode= tnode->NextSiblingElement("variable"))
         {
             const char* mstr=NULL; tnode->QueryStringAttribute("name", &mstr);
