@@ -5,7 +5,7 @@
 #include <QMainWindow>
 
 #ifndef RESDEF_HPP
-#include "resdef.hpp"
+#include "../../../resdef.hpp"
 #endif
 
 class GMRoom;

@@ -15,16 +15,16 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 set(PROJECT_SOURCES
         main.cpp
         resman.hpp resdef.hpp gameman.hpp
-        mainwindow.cpp mainwindow.h mainwindow.ui
-        spriteeditor.h spriteeditor.cpp spriteeditor.ui
-        constanteditor.h constanteditor.cpp constanteditor.ui
-        objecteditor.h objecteditor.cpp objecteditor.ui
-        roomeditor.h roomeditor.cpp roomeditor.ui
-        eventpicker.h eventpicker.cpp eventpicker.ui
-        roomview.h roomview.cpp roomview.ui
-        compiledialog.h compiledialog.cpp compiledialog.ui
-        roomorderer.h roomorderer.cpp roomorderer.ui
-        vardefiner.h vardefiner.cpp vardefiner.ui
+        ui/main/mainwindow.cpp ui/main/mainwindow.h ui/main/mainwindow.ui
+        ui/editor/sprite/spriteeditor.h ui/editor/sprite/spriteeditor.cpp ui/editor/sprite/spriteeditor.ui
+        ui/editor/constant/constanteditor.h ui/editor/constant/constanteditor.cpp ui/editor/constant/constanteditor.ui
+        ui/editor/object/objecteditor.h ui/editor/object/objecteditor.cpp ui/editor/object/objecteditor.ui
+        ui/editor/room/roomeditor.h ui/editor/room/roomeditor.cpp ui/editor/room/roomeditor.ui
+        ui/editor/object/eventpicker.h ui/editor/object/eventpicker.cpp ui/editor/object/eventpicker.ui
+        ui/editor/room/roomview.h ui/editor/room/roomview.cpp ui/editor/room/roomview.ui
+        ui/main/compiledialog.h ui/main/compiledialog.cpp ui/main/compiledialog.ui
+        ui/main/roomorderer.h ui/main/roomorderer.cpp ui/main/roomorderer.ui
+        ui/editor/object/vardefiner.h ui/editor/object/vardefiner.cpp ui/editor/object/vardefiner.ui
         resources.qrc
         lib/tinyxml2.h lib/tinyxml2.cpp
 )

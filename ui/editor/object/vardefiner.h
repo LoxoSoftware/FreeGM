@@ -4,7 +4,7 @@
 #include <QDialog>
 
 #ifndef RESDEF_HPP
-#include "resdef.hpp"
+#include "../../../resdef.hpp"
 #endif
 
 namespace Ui {

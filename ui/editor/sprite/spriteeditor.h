@@ -5,7 +5,7 @@
 #include <QTreeWidgetItem>
 
 #ifndef RESDEF_HPP
-#include "resdef.hpp"
+#include "../../../resdef.hpp"
 #endif
 
 class GMSprite;

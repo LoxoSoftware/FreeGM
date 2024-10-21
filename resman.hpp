@@ -38,10 +38,10 @@ QWidget* mainwindow;
 
 QList<GMResource*> resources= QList<GMResource*>();
 
-#include "spriteeditor.h"
-#include "roomeditor.h"
-#include "objecteditor.h"
-#include "constanteditor.h"
+#include "ui/editor/sprite/spriteeditor.h"
+#include "ui/editor/room/roomeditor.h"
+#include "ui/editor/object/objecteditor.h"
+#include "ui/editor/constant/constanteditor.h"
 
 GMResource* resource_find(QString name)
 {

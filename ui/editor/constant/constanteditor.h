@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "resdef.hpp"
+#include "../../../resdef.hpp"
 
 namespace Ui {
 class ConstantEditor;

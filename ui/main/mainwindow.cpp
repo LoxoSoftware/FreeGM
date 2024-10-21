@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
 
-#include "resman.hpp"
-#include "gameman.hpp"
+#include "../../resman.hpp"
+#include "../../gameman.hpp"
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"

@@ -1,6 +1,6 @@
 //#include "resman.hpp"
 
-#include "mainwindow.h"
+#include "ui/main/mainwindow.h"
 
 #include <QApplication>
 

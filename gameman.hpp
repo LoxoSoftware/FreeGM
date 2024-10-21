@@ -14,7 +14,7 @@
 #include <iostream>
 
 #include "resman.hpp"
-#include "compiledialog.h"
+#include "ui/main/compiledialog.h"
 
 #include "lib/tinyxml2.h"
 
