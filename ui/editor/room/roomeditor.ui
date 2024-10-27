@@ -36,7 +36,7 @@
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::NoDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
@@ -69,7 +69,7 @@ margin: 0px;
           <x>0</x>
           <y>0</y>
           <width>182</width>
-          <height>445</height>
+          <height>450</height>
          </rect>
         </property>
         <widget class="QGroupBox" name="groupBox_3">
@@ -102,7 +102,7 @@ margin: 0px;
            <rect>
             <x>20</x>
             <y>30</y>
-            <width>51</width>
+            <width>41</width>
             <height>22</height>
            </rect>
           </property>
@@ -127,7 +127,7 @@ margin: 0px;
         <widget class="QLabel" name="label">
          <property name="geometry">
           <rect>
-           <x>10</x>
+           <x>0</x>
            <y>0</y>
            <width>101</width>
            <height>22</height>
@@ -169,7 +169,7 @@ margin: 0px;
           <widget class="QGroupBox" name="groupBox_2">
            <property name="geometry">
             <rect>
-             <x>10</x>
+             <x>9</x>
              <y>10</y>
              <width>181</width>
              <height>71</height>
@@ -197,7 +197,7 @@ margin: 0px;
           <widget class="QGroupBox" name="groupBox_4">
            <property name="geometry">
             <rect>
-             <x>10</x>
+             <x>9</x>
              <y>10</y>
              <width>181</width>
              <height>71</height>
@@ -347,7 +347,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>0</y>
+       <y>5</y>
        <width>71</width>
        <height>31</height>
       </rect>
@@ -356,7 +356,7 @@ margin: 0px;
       <string>Ok</string>
      </property>
      <property name="icon">
-      <iconset resource="resources.qrc">
+      <iconset resource="../../../resources.qrc">
        <normaloff>:/icons/ok</normaloff>:/icons/ok</iconset>
      </property>
     </widget>
@@ -364,7 +364,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>0</y>
+       <y>5</y>
        <width>41</width>
        <height>25</height>
       </rect>
@@ -386,7 +386,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>10</y>
+       <y>11</y>
        <width>41</width>
        <height>16</height>
       </rect>
@@ -399,7 +399,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>10</y>
+       <y>9</y>
        <width>21</width>
        <height>16</height>
       </rect>
@@ -412,7 +412,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>0</y>
+       <y>5</y>
        <width>41</width>
        <height>25</height>
       </rect>
@@ -434,7 +434,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>290</x>
-       <y>0</y>
+       <y>5</y>
        <width>100</width>
        <height>28</height>
       </rect>
@@ -449,8 +449,8 @@ margin: 0px;
     <widget class="Line" name="line">
      <property name="geometry">
       <rect>
-       <x>80</x>
-       <y>0</y>
+       <x>82</x>
+       <y>5</y>
        <width>20</width>
        <height>31</height>
       </rect>
@@ -462,8 +462,8 @@ margin: 0px;
     <widget class="Line" name="line_2">
      <property name="geometry">
       <rect>
-       <x>390</x>
-       <y>0</y>
+       <x>392</x>
+       <y>5</y>
        <width>20</width>
        <height>31</height>
       </rect>
@@ -476,7 +476,7 @@ margin: 0px;
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>0</y>
+       <y>5</y>
        <width>71</width>
        <height>30</height>
       </rect>
@@ -489,7 +489,7 @@ margin: 0px;
   </widget>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../../../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

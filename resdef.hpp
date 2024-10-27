@@ -85,7 +85,7 @@ public:
     int room_snapY = 32;
     bool room_grid = true;
     QList<GMInstance> instances;
-    QColor back_color = QColor::fromRgb(0,255,255);
+    QColor back_color = QColor::fromRgb(116,232,232);
     bool fill_back = true;
     GMRoom(QTreeWidgetItem* tree_item)
     {
