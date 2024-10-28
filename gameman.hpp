@@ -1,8 +1,6 @@
 #ifndef GAMEMAN_HPP
 #define GAMEMAN_HPP
 
-#endif // GAMEMAN_HPP
-
 #include <QTreeWidgetItem>
 #include <QDialog>
 #include <QFileDialog>
@@ -719,3 +717,5 @@ int game_compile()
     cdial->close();
     return 0;
 }
+
+#endif // GAMEMAN_HPP
